@@ -27,7 +27,17 @@ def upgrade():
         sa.Column('updated_at', sa.String(255)),
         sa.Column('name', sa.String(255), nullable=False, primary_key=True),
     )
+    op.create_table(
+        'routes',
+        sa.Column('project_id', sa.String(255), nullable=False),
+        sa.Column('path', sa.String(255), nullable=False, primary_key=True),
+        sa.Column('is_public', sa.Boolean(create_constraint=False), nullable=False),
+        sa.Column('app_name', sa.String(255), nullable=False, primary_key=True),
+        sa.Column('created_at', sa.String(255), nullable=False),
+        sa.Column('updated_at', sa.String(255), nullable=False),
+    )
 
 
 def downgrade():
+    op.drop_table('routes')
     op.drop_table('apps')

@@ -35,14 +35,13 @@ class ServiceControllerBase(object):
                  method.arg_method,
                  method.arg_route] for method in methods]
 
-    def __init__(self, service: web.Application):
+    def __init__(self, sub_service: web.Application):
         for fn, http_method, route in self.__get_handlers():
             proxy_fn = '_'.join([fn.__name__, self.controller_name])
             setattr(self, proxy_fn, fn)
-            service.router.add_route(http_method,
-                                     "/{}/{}".format(self.version, route),
-                                     getattr(self, proxy_fn),
-                                     name=proxy_fn)
+            sub_service.router.add_route(
+                http_method, "/{}".format(route),
+                getattr(self, proxy_fn), name=proxy_fn)
 
 
 def api_action(**outter_kwargs):

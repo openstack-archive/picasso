@@ -18,14 +18,8 @@ from laos.common.base import controllers
 from laos.common import config
 
 
-class RunnableV1Controller(controllers.ServiceControllerBase):
+class RunnableMixin(object):
 
-    controller_name = "runnable"
-    # IronFunction uses `r` as runnable instead API version
-    version = "r"
-
-    @controllers.api_action(
-        method='POST', route='{project_id}/{app}/{route}')
     async def run(self, request, **kwargs):
         c = config.Config.config_instance()
         fnclient = c.functions_client
@@ -68,3 +62,31 @@ class RunnableV1Controller(controllers.ServiceControllerBase):
             return _data
 
         return web.json_response(status=200, data=process_result(result))
+
+
+class PublicRunnableV1Controller(controllers.ServiceControllerBase,
+                                 RunnableMixin):
+
+    controller_name = "public_runnable"
+    # IronFunction uses `r` as runnable instead API version
+    version = "r"
+
+    @controllers.api_action(
+        method='POST', route='{app}/{route}')
+    async def run(self, request, **kwargs):
+        return await super(PublicRunnableV1Controller,
+                           self).run(request, **kwargs)
+
+
+class RunnableV1Controller(controllers.ServiceControllerBase,
+                           RunnableMixin):
+
+    controller_name = "runnable"
+    # IronFunction uses `r` as runnable instead API version
+    version = "r"
+
+    @controllers.api_action(
+        method='POST', route='{project_id}/{app}/{route}')
+    async def run(self, request, **kwargs):
+        return await super(RunnableV1Controller,
+                           self).run(request, **kwargs)

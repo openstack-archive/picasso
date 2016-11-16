@@ -36,7 +36,6 @@ setuptools.setup(
         "click",
         "keystoneauth1>=2.14.0",
         "python-keystoneclient==3.6.0",
-        "SQLAlchemy<1.1.0,>=1.0.10",
     ],
     license='License :: OSI Approved :: Apache Software License',
     classifiers=[

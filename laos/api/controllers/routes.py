@@ -12,6 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
+
 from aiohttp import web
 
 from laos.api.views import app as app_view
@@ -34,6 +36,10 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
         app = request.match_info.get('app')
+
+        log.info("Listing app {} routes for project: {}."
+                 .format(app, project_id))
+
         if not (await app_model.Apps.exists(app, project_id)):
             return web.json_response(data={
                 "error": {
@@ -44,10 +50,20 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
         fn_app_routes = (await (await fnclient.apps.show(
             app, loop=c.event_loop)).routes.list(loop=c.event_loop))
 
+        for fn_route in fn_app_routes:
+            stored_route = (await app_model.Routes.find_by(
+                app_name=app,
+                project_id=project_id,
+                path=fn_route.path)).pop()
+            setattr(fn_route, "is_public", stored_route.public)
+
+        api_url = "{}://{}".format(request.scheme, request.host)
         log.info("Listing app {} routes for project: {}."
                  .format(app, project_id))
         return web.json_response(data={
-            "routes": app_view.AppRouteView(fn_app_routes).view(),
+            "routes": app_view.AppRouteView(api_url,
+                                            project_id,
+                                            fn_app_routes).view(),
             "message": "Successfully loaded app routes",
         }, status=200)
 
@@ -58,6 +74,7 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
         app = request.match_info.get('app')
+
         if not (await app_model.Apps.exists(app, project_id)):
             return web.json_response(data={
                 "error": {
@@ -67,6 +84,8 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
 
         data = (await request.json())['route']
         path = data['path']
+        is_public = json.loads(data.get(
+            'is_public', "false"))
 
         try:
             fn_app = await fnclient.apps.show(app, loop=c.event_loop)
@@ -95,15 +114,26 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
                     }
                 }, status=getattr(ex, "status", 500))
 
-        new_fn_route = (await (await fnclient.apps.show(
-            app, loop=c.event_loop)).routes.create(
+        new_fn_route = (await fn_app.routes.create(
             **data, loop=c.event_loop))
+
+        stored_route = await app_model.Routes(
+            app_name=new_fn_route.appname,
+            project_id=project_id,
+            path=new_fn_route.path,
+            is_public=is_public).save()
 
         log.info("Creating new route in app {} "
                  "for project: {} with data {}"
                  .format(app, project_id, str(data)))
+        api_url = "{}://{}".format(request.scheme, request.host)
+
+        setattr(new_fn_route, "is_public", stored_route.public)
+        view = app_view.AppRouteView(
+            api_url, project_id, [new_fn_route]).view()
+
         return web.json_response(data={
-            "route": app_view.AppRouteView([new_fn_route]).view(),
+            "route": view,
             "message": "App route successfully created"
         }, status=200)
 
@@ -115,6 +145,13 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
         project_id = request.match_info.get('project_id')
         app = request.match_info.get('app')
         path = request.match_info.get('route')
+
+        if not (await app_model.Apps.exists(app, project_id)):
+            return web.json_response(data={
+                "error": {
+                    "message": "App {0} not found".format(app),
+                }
+            }, status=404)
 
         try:
             fn_app = await fnclient.apps.show(app, loop=c.event_loop)
@@ -129,8 +166,20 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
 
         log.info("Requesting route {} in app {} for project: {}"
                  .format(path, app, project_id))
+
+        api_url = "{}://{}".format(request.scheme, request.host)
+
+        stored_route = (await app_model.Routes.find_by(
+            app_name=app,
+            project_id=project_id,
+            path=route.path)).pop()
+
+        setattr(route, "is_public", stored_route.public)
+
         return web.json_response(data={
-            "route": app_view.AppRouteView([route]).view().pop(),
+            "route": app_view.AppRouteView(api_url,
+                                           project_id,
+                                           [route]).view().pop(),
             "message": "App route successfully loaded"
         }, status=200)
 
@@ -144,10 +193,19 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
         path = request.match_info.get('route')
         log.info("Deleting route {} in app {} for project: {}"
                  .format(path, app, project_id))
+
+        if not (await app_model.Apps.exists(app, project_id)):
+            return web.json_response(data={
+                "error": {
+                    "message": "App {0} not found".format(app),
+                }
+            }, status=404)
+
         try:
             fn_app = await fnclient.apps.show(app, loop=c.event_loop)
             await fn_app.routes.show("/{}".format(path), loop=c.event_loop)
             await fn_app.routes.delete("/{}".format(path), loop=c.event_loop)
+            await app_model.Routes.delete(project_id=project_id, app_name=app)
         except Exception as ex:
             return web.json_response(data={
                 "error": {

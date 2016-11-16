@@ -27,6 +27,12 @@ class TasksV1Controller(controllers.ServiceControllerBase):
     controller_name = "tasks"
     version = "v1"
 
+    # TODO(denismakogon):
+    # - define subapp to process requests to tasks API:
+    #   * extract tasks V1 controller to subapp
+    # - on each request check if route is public our private
+    #   * reject with 401 if route is private
+    #   * accept with 200 if route is public
     @controllers.api_action(
         method='GET', route='{project_id}/tasks')
     async def get(self, request, **kwargs):

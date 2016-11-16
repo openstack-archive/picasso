@@ -18,12 +18,13 @@ async def content_type_validator(app: web.Application, handler):
     async def middleware_handler(request: web.Request):
         headers = request.headers
         content_type = headers.get("Content-Type")
-        if "application/json" not in content_type:
-            return web.json_response(
-                data={
-                    "error": {
-                        "message": "Invalid content type"
-                    }
-                }, status=400)
+        if request.has_body:
+            if "application/json" != content_type:
+                return web.json_response(
+                    data={
+                        "error": {
+                            "message": "Invalid content type"
+                        }
+                    }, status=400)
         return await handler(request)
     return middleware_handler

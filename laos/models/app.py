@@ -26,3 +26,20 @@ class Apps(persistence.BaseDatabaseModel):
         "updated_at",
         "name"
     )
+
+
+class Routes(persistence.BaseDatabaseModel):
+
+    table_name = "routes"
+    columns = (
+        "project_id",
+        "path",
+        "is_public",
+        "app_name",
+        "created_at",
+        "updated_at",
+    )
+
+    @property
+    def public(self):
+        return True if self.is_public else False

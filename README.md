@@ -123,12 +123,14 @@ In [examples](examples/) folder you can find a script that examines available AP
 * `LAOS_API_URL` - Project LaOS API endpoint
 * `OS_AUTH_URL` - OpenStack Auth URL
 * `OS_PROJECT_ID` - it can be found in OpenStack Dashboard or in CLI
-
-Along with that, you need to adjust [token_request.json](examples/token_request.json) in order to retrieve X-Auth-Token for further authentication against OpenStack and LaOS API service.
+* `OS_USERNAME` - OpenStack project-aligned username
+* `OS_PASSWORD` - OpenStack project-aligned user password
+* `OS_DOMAIN` - OpenStack project domain name
+* `OS_PROJECT_NAME` - OpenStack project name
 
 Then just run script:
 
-    OS_AUTH_URL=http://192.168.0.112:5000/v3 OS_PROJECT_ID=8fb76785313a4500ac5367eb44a31677 ./hello-lambda.sh
+    OS_AUTH_URL=http://192.168.0.112:5000/v3 OS_PROJECT_ID=8fb76785313a4500ac5367eb44a31677 OS_USERNAME=admin OS_PASSWORD=root OS_DOMAIN=default OS_PROJECT_NAME=admin ./examples/hello-lambda.sh
 
 Please note, that given values are project-specific, so they can't be reused.
 

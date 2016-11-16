@@ -35,22 +35,36 @@ class API(service.AbstractWebServer):
     def __init__(self, host: str='0.0.0.0',
                  port: int=10001,
                  loop: asyncio.AbstractEventLoop=asyncio.get_event_loop(),
-                 logger=None):
+                 logger=None,
+                 debug=False):
         super(API, self).__init__(
             host=host,
             port=port,
-            controllers=[
-                apps.AppV1Controller,
-                routes.AppRouteV1Controller,
-                runnable.RunnableV1Controller,
-                tasks.TasksV1Controller,
-            ],
-            middlewares=[
+            private_controllers={
+                "v1": [
+                    apps.AppV1Controller,
+                    routes.AppRouteV1Controller,
+                    tasks.TasksV1Controller,
+                ],
+                "private": [
+                    runnable.RunnableV1Controller,
+                ]
+            },
+            public_controllers={
+                "public": [
+                    runnable.PublicRunnableV1Controller,
+                ],
+            },
+            private_middlewares=[
                 keystone.auth_through_token,
+                content_type.content_type_validator,
+            ],
+            public_middlewares=[
                 content_type.content_type_validator,
             ],
             event_loop=loop,
             logger=logger,
+            debug=debug,
         )
 
 
@@ -73,6 +87,7 @@ class API(service.AbstractWebServer):
               help='Logging file')
 @click.option('--log-file', default=None,
               help='Log file path')
+@click.option('--debug', default=False, is_flag=True)
 def server(host, port, db_uri,
            keystone_endpoint,
            functions_host,
@@ -81,6 +96,7 @@ def server(host, port, db_uri,
            functions_api_protocol,
            log_level,
            log_file,
+           debug,
            ):
     """
     Starts an Project Laos API service
@@ -88,7 +104,7 @@ def server(host, port, db_uri,
     logger = log.UnifiedLogger(
         log_to_console=True if not log_file else False,
         filename=None if not log_file else log_file,
-        level=log_level).setup_logger(__name__)
+        level=log_level).setup_logger(__package__)
 
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     loop = asyncio.get_event_loop()
@@ -104,17 +120,14 @@ def server(host, port, db_uri,
 
     config.Config(
         auth_url=keystone_endpoint,
-        functions_host=functions_host,
-        functions_port=functions_port,
-        functions_api_protocol=functions_api_protocol,
-        functions_api_version=functions_api_version,
         functions_client=fnclient,
         logger=logger,
         connection=conn,
         event_loop=loop,
     )
 
-    API(host=host, port=port, loop=loop, logger=logger).initialize()
+    API(host=host, port=port, loop=loop,
+        logger=logger, debug=debug).initialize()
 
 
 if __name__ == "__main__":
