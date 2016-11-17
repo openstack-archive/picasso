@@ -27,6 +27,10 @@ class BaseDatabaseModel(object):
     DELETE = "DELETE FROM {} {}"
 
     def __init__(self, **kwargs):
+        logger = config.Config.config_instance().logger
+        logger.info("Attempting to create object class instance "
+                    "'{}' with attributes '{}'"
+                    .format(str(self.__class__), str(kwargs)))
         self.id = uuid.uuid4().hex
         self.created_at = str(datetime.datetime.now())
         self.updated_at = str(datetime.datetime.now())
@@ -34,30 +38,37 @@ class BaseDatabaseModel(object):
             setattr(self, k, v)
 
     async def save(self):
+        logger = config.Config.config_instance().logger
         insert = self.INSERT.format(
             self.table_name,
             str(tuple([getattr(self, clmn) for clmn in self.columns]))
         )
-        print(insert)
+        logger.info("Attempting to save object '{}' "
+                    "using SQL query: {}".format(self.table_name, insert))
         async with config.Connection.from_class().acquire() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(insert)
                 await conn.commit()
+        logger.info("Object saved.")
         return self
 
     @classmethod
     async def delete(cls, **kwargs):
+        logger = config.Config.config_instance().logger
         delete = cls.DELETE.format(
             cls.table_name, cls.__define_where(**kwargs))
+        logger.info("Attempting to delete object '{}' "
+                    "using SQL query: {}".format(cls.table_name, delete))
         async with config.Connection.from_class().acquire() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(delete)
                 await conn.commit()
+        logger.info("Object gone.")
 
-    async def update(self, **kwargs):
-        async with config.Connection.from_class().acquire() as conn:
-            async with conn.cursor() as cur:
-                await cur.execute()
+    # async def update(self, **kwargs):
+    #     async with config.Connection.from_class().acquire() as conn:
+    #         async with conn.cursor() as cur:
+    #             await cur.execute()
 
     @classmethod
     async def exists(cls, name, project_id):
@@ -81,12 +92,15 @@ class BaseDatabaseModel(object):
 
     @classmethod
     async def find_by(cls, **kwargs):
+        logger = config.Config.config_instance().logger
         where = cls.__define_where(**kwargs)
-
+        select = cls.SELECT.format(
+            cls.table_name, where)
+        logger.info("Attempting to find object(s) '{}' "
+                    "using SQL : {}".format(cls.table_name, select))
         async with config.Connection.from_class().acquire() as conn:
             async with conn.cursor() as cur:
-                await cur.execute(cls.SELECT.format(
-                    cls.table_name, where))
+                await cur.execute(select)
                 results = await cur.fetchall()
                 return [cls.from_tuple(instance)
                         for instance in results] if results else []

@@ -29,6 +29,19 @@ class AppV1Controller(controllers.ServiceControllerBase):
 
     @controllers.api_action(method='GET', route='{project_id}/apps')
     async def list(self, request, **kwargs):
+        """
+        ---
+        description: Listing project-scoped apps
+        tags:
+        - Apps
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: successful operation. Return "apps" JSON
+            "401":
+                description: Not authorized.
+        """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
@@ -48,6 +61,31 @@ class AppV1Controller(controllers.ServiceControllerBase):
 
     @controllers.api_action(method='POST', route='{project_id}/apps')
     async def create(self, request, **kwargs):
+        """
+        ---
+        description: Creating project-scoped app
+        tags:
+        - Apps
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: app
+          description: Created project-scoped app
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+        responses:
+            "200":
+                description: successful operation. Return "app" JSON
+            "401":
+                description: Not authorized.
+            "409":
+                description: App exists
+        """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
@@ -82,6 +120,21 @@ class AppV1Controller(controllers.ServiceControllerBase):
 
     @controllers.api_action(method='GET', route='{project_id}/apps/{app}')
     async def get(self, request, **kwargs):
+        """
+        ---
+        description: Pulling project-scoped app
+        tags:
+        - Apps
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: successful operation. Return "app" JSON
+            "401":
+                description: Not authorized.
+            "404":
+                description: App not found
+        """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
@@ -125,6 +178,21 @@ class AppV1Controller(controllers.ServiceControllerBase):
 
     @controllers.api_action(method='DELETE', route='{project_id}/apps/{app}')
     async def delete(self, request, **kwargs):
+        """
+        ---
+        description: Deleting project-scoped app
+        tags:
+        - Apps
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: successful operation. Return empty JSON
+            "401":
+                description: Not authorized.
+            "404":
+                description: App does not exist
+        """
         project_id = request.match_info.get('project_id')
         app = request.match_info.get('app')
 

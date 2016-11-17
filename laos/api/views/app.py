@@ -33,16 +33,26 @@ class AppView(object):
 
 class AppRouteView(object):
 
-    def __init__(self, fn_app_routes):
+    def __init__(self, api_url, project_id, fn_app_routes):
         self.routes = fn_app_routes
+        self.api_url = api_url
+        self.project_id = project_id
 
     def view(self):
         view = []
         for route in self.routes:
+            if not route.is_public:
+                path = ("{}/private/{}/{}{}".format(
+                    self.api_url, self.project_id,
+                    route.appname, route.path))
+            else:
+                path = ("{}/public/{}{}".format(
+                    self.api_url, route.appname, route.path))
             view.append({
-                "path": route.path,
+                "path": path,
                 "type": route.type,
                 "memory": route.memory,
                 "image": route.image,
+                "is_public": route.is_public,
             })
         return view

@@ -29,20 +29,19 @@ class ServiceControllerBase(object):
         # so this code ignores it because it doesn't belong to controllers
         methods = [getattr(self, _m)
                    for _m in dir(self) if inspect.ismethod(
-                   getattr(self, _m)) and not _m.startswith("__")][1:]
+                   getattr(self, _m)) and "__" not in _m]
 
         return [[method,
                  method.arg_method,
                  method.arg_route] for method in methods]
 
-    def __init__(self, service: web.Application):
+    def __init__(self, sub_service: web.Application):
         for fn, http_method, route in self.__get_handlers():
             proxy_fn = '_'.join([fn.__name__, self.controller_name])
             setattr(self, proxy_fn, fn)
-            service.router.add_route(http_method,
-                                     "/{}/{}".format(self.version, route),
-                                     getattr(self, proxy_fn),
-                                     name=proxy_fn)
+            sub_service.router.add_route(
+                http_method, "/{}".format(route),
+                getattr(self, proxy_fn), name=proxy_fn)
 
 
 def api_action(**outter_kwargs):
@@ -67,8 +66,8 @@ def api_action(**outter_kwargs):
     def _api_handler(func):
 
         @functools.wraps(func)
-        def wrapper(self, *args, **kwargs):
-            return func(self, *args, *kwargs)
+        async def wrapper(self, *args, **kwargs):
+            return await func(self, *args, *kwargs)
 
         for key, value in outter_kwargs.items():
             setattr(wrapper, 'arg_{}'.format(key), value)

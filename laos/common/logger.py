@@ -76,7 +76,10 @@ class UnifiedLogger(object, metaclass=utils.Singleton):
         if 'DEBUG' not in level:
             self.log_formatter = (
                 '[%(asctime)s] - '
-                '%(message)s')
+                '%(name)s - '
+                '%(module)s.py:%(lineno)d - '
+                '%(message)s'
+            )
         else:
             self. log_formatter = (
                 '[%(asctime)s] - '

@@ -13,11 +13,11 @@
 #    under the License.
 
 import asyncio
-import os
-import typing
+
+import aiohttp_swagger
 
 from aiohttp import web
-from laos.common.base import controllers as c
+
 from laos.common import logger as log
 
 
@@ -25,49 +25,62 @@ class AbstractWebServer(object):
 
     def __init__(self, host: str='127.0.0.1',
                  port: int= '10001',
-                 controllers: typing.List[c.ServiceControllerBase]=None,
-                 middlewares: list=None,
+                 private_controllers: dict=None,
+                 private_middlewares: list=None,
+                 public_middlewares: list=None,
+                 public_controllers: dict=None,
                  event_loop: asyncio.AbstractEventLoop=None,
                  logger=log.UnifiedLogger(
                      log_to_console=True,
-                     level="INFO").setup_logger(__name__)):
+                     level="INFO").setup_logger(__name__),
+                 debug=False):
         """
         HTTP server abstraction class
-        :param host:
-        :param port:
-        :param controllers:
-        :param middlewares:
-        :param event_loop:
-        :param logger:
+        :param host: Bind host
+        :param port: Bind port
+        :param private_controllers: private API controllers mapping
+        :param private_middlewares: list of private API middleware
+        :param public_middlewares:
+                list of public API middleware
+        :param public_controllers:
+                public API controllers mapping
+        :param event_loop: asyncio eventloop
+        :param logger: logging.Logger
         """
         self.host = host
         self.port = port
-        self.controllers = controllers
         self.event_loop = event_loop
-        self.service = web.Application(
-            loop=self.event_loop,
-            debug=os.environ.get('PYTHONASYNCIODEBUG', 0),
-            middlewares=middlewares if middlewares else [])
-        self.service_handler = None
-        self.server = None
         self.logger = logger
 
-    def _apply_routers(self):
-        if self.controllers:
-            for controller in self.controllers:
-                controller(self.service)
+        self.root_service = web.Application(
+            logger=self.logger,
+            loop=self.event_loop,
+            debug=debug
+        )
 
-    def shutdown(self):
-        self.server.close()
-        self.event_loop.run_until_complete(self.server.wait_closed())
-        self.event_loop.run_until_complete(
-            self.service_handler.finish_connections(1.0))
-        self.event_loop.run_until_complete(self.service.cleanup())
+        self.register_subapps(private_controllers, private_middlewares)
+        self.register_subapps(public_controllers, public_middlewares)
+
+    def _apply_routers(self, service, controllers):
+        for controller in controllers:
+            controller(service)
+        return service
+
+    def register_subapps(self, controllers_mapping: dict, middlewares: list):
+        if controllers_mapping:
+            for sub_route, controllers in controllers_mapping.items():
+                service = self._apply_routers(
+                    web.Application(
+                        logger=self.logger,
+                        loop=self.event_loop,
+                        middlewares=middlewares
+                        if middlewares else []),
+                    controllers)
+                self.root_service.router.add_subapp(
+                    "/{}/".format(sub_route), service)
 
     def initialize(self):
-        self._apply_routers()
-        try:
-            web.run_app(self.service, host=self.host, port=self.port,
-                        shutdown_timeout=10, access_log=self.logger)
-        except KeyboardInterrupt:
-            self.shutdown()
+        aiohttp_swagger.setup_swagger(
+            self.root_service, swagger_url="/api")
+        web.run_app(self.root_service, host=self.host, port=self.port,
+                    shutdown_timeout=10, access_log=self.logger)
