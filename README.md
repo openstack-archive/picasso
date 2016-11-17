@@ -50,7 +50,7 @@ Quick-start guide
 -----------------
 
 Install DevStack with [IronFunctions enabled](https://github.com/iron-io/functions-devstack-plugin/blob/master/README.rst).
-Pull down [Project LaOS sources](https://github.com/denismakogon/project-laos).
+Pull down [Project LaOS sources](https://github.com/iron-io/project-laos).
 
 Create Python3.5 virtualenv:
 
@@ -69,17 +69,21 @@ Install LaOS itself:
 
     $ pip install -e .
 
+Install MySQL if you haven't already, and create a new database for functions.
+
+    $ mysql -uroot -p -e "CREATE DATABASE functions"
+
 
 Migrations
 ----------
 
 Once all dependencies are installed it is necessary to run database migrations.
-Before that please adjust [alembic.ini](alembic.ini) row #32
+Before that please edit [alembic.ini](alembic.ini) line #32
 
-    sqlalchemy.url = mysql+pymysql://root:root@192.168.0.112/functions
+    sqlalchemy.url = mysql+pymysql://root:root@localhost/functions
 
-In this section please specify connection URI to your own database.
-Once it is done just hit alembic to apply migrations:
+In this section please specify connection URI to your own MySQL database.
+Once the file is saved, just use alembic to apply the migrations:
 
     $ alembic upgrade head
 
