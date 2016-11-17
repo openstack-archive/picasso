@@ -74,7 +74,7 @@ Migrations
 ----------
 
 Once all dependencies are installed it is necessary to run database migrations.
-Before that please adjust [alembic.ini](alembic.ini) row #32
+Before that please edit [alembic.ini](alembic.ini) line #32
 
     sqlalchemy.url = mysql+pymysql://root:root@192.168.0.112/functions
 
