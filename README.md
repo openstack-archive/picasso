@@ -69,6 +69,10 @@ Install LaOS itself:
 
     $ pip install -e .
 
+Install MySQL if you haven't already, and create a new database for functions.
+
+    $ mysql -uroot -p -e "CREATE DATABASE functions"
+
 
 Migrations
 ----------
@@ -76,10 +80,10 @@ Migrations
 Once all dependencies are installed it is necessary to run database migrations.
 Before that please edit [alembic.ini](alembic.ini) line #32
 
-    sqlalchemy.url = mysql+pymysql://root:root@192.168.0.112/functions
+    sqlalchemy.url = mysql+pymysql://root:root@localhost/functions
 
-In this section please specify connection URI to your own database.
-Once it is done just hit alembic to apply migrations:
+In this section please specify connection URI to your own MySQL database.
+Once the file is saved, just use alembic to apply the migrations:
 
     $ alembic upgrade head
 
