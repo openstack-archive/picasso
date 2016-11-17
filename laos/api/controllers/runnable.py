@@ -74,6 +74,21 @@ class PublicRunnableV1Controller(controllers.ServiceControllerBase,
     @controllers.api_action(
         method='POST', route='{app}/{route}')
     async def run(self, request, **kwargs):
+        """
+        ---
+        description: Running public app route
+        tags:
+        - Runnable
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: successful operation. Return "runnable" JSON
+            "404":
+                description: App does not exist
+            "404":
+                description: App route does not exist
+        """
         return await super(PublicRunnableV1Controller,
                            self).run(request, **kwargs)
 
@@ -88,5 +103,22 @@ class RunnableV1Controller(controllers.ServiceControllerBase,
     @controllers.api_action(
         method='POST', route='{project_id}/{app}/{route}')
     async def run(self, request, **kwargs):
+        """
+        ---
+        description: Running private app route
+        tags:
+        - Runnable
+        produces:
+        - application/json
+        responses:
+            "401":
+                description: Not authorized.
+            "200":
+                description: successful operation. Return "runnable" JSON
+            "404":
+                description: App does not exist
+            "404":
+                description: App route does not exist
+        """
         return await super(RunnableV1Controller,
                            self).run(request, **kwargs)

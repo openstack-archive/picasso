@@ -35,7 +35,20 @@ class TasksV1Controller(controllers.ServiceControllerBase):
     #   * accept with 200 if route is public
     @controllers.api_action(
         method='GET', route='{project_id}/tasks')
-    async def get(self, request, **kwargs):
+    async def list(self, request, **kwargs):
+        """
+        ---
+        description: Listing tasks
+        tags:
+        - Runnable tasks
+        produces:
+        - application/json
+        responses:
+            "401":
+                description: Not authorized.
+            "405":
+                description: Not implemented
+        """
         # c = config.Config.config_instance()
         # fnclient = c.functions_client
         # project_id = request.match_info.get('project_id')
@@ -53,6 +66,19 @@ class TasksV1Controller(controllers.ServiceControllerBase):
     @controllers.api_action(
         method='GET', route='{project_id}/tasks/{task}')
     async def show(self, request, **kwargs):
+        """
+        ---
+        description: Pulling specific tasks by its ID
+        tags:
+        - Runnable tasks
+        produces:
+        - application/json
+        responses:
+            "401":
+                description: Not authorized.
+            "405":
+                description: Not implemented
+        """
         # c = config.Config.config_instance()
         # fnclient = c.functions_client
         # project_id = request.match_info.get('project_id')

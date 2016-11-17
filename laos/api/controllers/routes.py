@@ -32,6 +32,21 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
     @controllers.api_action(
         method='GET', route='{project_id}/apps/{app}/routes')
     async def list(self, request, **kwargs):
+        """
+        ---
+        description: Listing project-scoped app routes
+        tags:
+        - Routes
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: Successful operation. Return "routes" JSON
+            "401":
+                description: Not authorized.
+            "404":
+                description: App does not exist
+        """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
@@ -70,6 +85,39 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
     @controllers.api_action(
         method='POST', route='{project_id}/apps/{app}/routes')
     async def create(self, request, **kwargs):
+        """
+        ---
+        description: Creating project-scoped app route
+        tags:
+        - Routes
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: route
+          description: Created project-scoped app
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+              path:
+                type: string
+              image:
+                type: string
+              is_public:
+                type: boolean
+        responses:
+            "200":
+                description: Successful operation. Return "route" JSON
+            "401":
+                description: Not authorized.
+            "404":
+                description: App does not exist
+            "409":
+                description: App route exists
+        """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
@@ -140,6 +188,23 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
     @controllers.api_action(
         method='GET', route='{project_id}/apps/{app}/routes/{route}')
     async def get(self, request, **kwargs):
+        """
+        ---
+        description: Pulling project-scoped app route
+        tags:
+        - Routes
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: Successful operation. Return "route" JSON
+            "401":
+                description: Not authorized.
+            "404":
+                description: App does not exist
+            "404":
+                description: App route does not exist
+        """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
@@ -186,6 +251,23 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
     @controllers.api_action(
         method='DELETE', route='{project_id}/apps/{app}/routes/{route}')
     async def delete(self, request, **kwargs):
+        """
+        ---
+        description: Deleting project-scoped app route
+        tags:
+        - Routes
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: Successful operation. Return empty JSON
+            "401":
+                description: Not authorized.
+            "404":
+                description: App does not exist
+            "404":
+                description: App route does not exist
+        """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')

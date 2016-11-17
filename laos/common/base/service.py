@@ -14,7 +14,10 @@
 
 import asyncio
 
+import aiohttp_swagger
+
 from aiohttp import web
+
 from laos.common import logger as log
 
 
@@ -71,12 +74,13 @@ class AbstractWebServer(object):
                         logger=self.logger,
                         loop=self.event_loop,
                         middlewares=middlewares
-                        if middlewares else []
-                    )
-                    , controllers)
+                        if middlewares else []),
+                    controllers)
                 self.root_service.router.add_subapp(
                     "/{}/".format(sub_route), service)
 
     def initialize(self):
+        aiohttp_swagger.setup_swagger(
+            self.root_service, swagger_url="/api")
         web.run_app(self.root_service, host=self.host, port=self.port,
                     shutdown_timeout=10, access_log=self.logger)

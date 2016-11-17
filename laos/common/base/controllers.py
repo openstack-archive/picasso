@@ -29,7 +29,7 @@ class ServiceControllerBase(object):
         # so this code ignores it because it doesn't belong to controllers
         methods = [getattr(self, _m)
                    for _m in dir(self) if inspect.ismethod(
-                   getattr(self, _m)) and not _m.startswith("__")][1:]
+                   getattr(self, _m)) and "__" not in _m]
 
         return [[method,
                  method.arg_method,
@@ -66,8 +66,8 @@ def api_action(**outter_kwargs):
     def _api_handler(func):
 
         @functools.wraps(func)
-        def wrapper(self, *args, **kwargs):
-            return func(self, *args, *kwargs)
+        async def wrapper(self, *args, **kwargs):
+            return await func(self, *args, *kwargs)
 
         for key, value in outter_kwargs.items():
             setattr(wrapper, 'arg_{}'.format(key), value)

@@ -36,6 +36,7 @@ setuptools.setup(
         "click",
         "keystoneauth1>=2.14.0",
         "python-keystoneclient==3.6.0",
+        "aiohttp-swagger",
     ],
     license='License :: OSI Approved :: Apache Software License',
     classifiers=[
