@@ -50,7 +50,7 @@ Quick-start guide
 -----------------
 
 Install DevStack with [IronFunctions enabled](https://github.com/iron-io/functions-devstack-plugin/blob/master/README.rst).
-Pull down [Project LaOS sources](https://github.com/denismakogon/project-laos).
+Pull down [Project LaOS sources](https://github.com/iron-io/project-laos).
 
 Create Python3.5 virtualenv:
 
