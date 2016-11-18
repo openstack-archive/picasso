@@ -155,8 +155,8 @@ In order to run tests you need to install `Tox`:
 
     $ pip install tox
 
-Also you'd need live MySQL instance with applied migrations.
-Tests are depending on pre-created MySQL database for persistence.
+Also, you will need a running MySQL instance with the database migrations applied from the previous step.
+Tests are dependent on pre-created MySQL database for persistence.
 Please set env var
 
     $ export TEST_DB_URI=mysql://<your-user>:<your-user-password>@<mysql-host>:<mysql-port>/<functions-db>
@@ -164,7 +164,7 @@ Please set env var
 Testing: PEP8
 -------------
 
-In order to run `PEP8` style checks run next command:
+In order to run `PEP8` style checks run following command:
 
     $ tox -e pep8
 
@@ -172,7 +172,7 @@ In order to run `PEP8` style checks run next command:
 Testing: Functional
 -------------------
 
-In order to run `functional` tests run next command:
+In order to run `functional` tests run following command:
 
     $ tox -e py35-functional
 
@@ -186,7 +186,7 @@ Cons:
 
 * MySQL server required
 * OpenStack authentication is not tested
-* IronFunctions API stabbed with fake implementation
+* IronFunctions API stubbed with fake implementation
 
 Testing: Integration
 --------------------
@@ -199,7 +199,7 @@ Testing: Coverage regression
 
 In order to build quality software it is necessary to keep test coverage at its highest point.
 So, as part of `Tox` testing new check was added - functional test coverage regression.
-In order to run it use next command:
+In order to run it use following command:
 
     $ tox -e py35-functional-regression
 

@@ -36,7 +36,7 @@ class FakeRoutes(object):
         app_routes = APP_ROUTES[self.app_name]
         if data.get("path") in [route.path for route in app_routes]:
             raise client.FunctionsAPIException(
-                "App {} route {} already exist.".format(
+                "App {} route {} already exists.".format(
                     self.app_name, data.get("path")), 409)
         else:
             data.update(
