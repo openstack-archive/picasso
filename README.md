@@ -146,7 +146,62 @@ Once server is launched you can navigate to:
 
     http://<laos-host>:<laos-port>/api
 
-Or if you need to create 
+to see recent API docs
+
+Testing (general information)
+-----------------------------
+
+In order to run tests you need to install `Tox`:
+
+    $ pip install tox
+
+Also, you will need a running MySQL instance with the database migrations applied from the previous step.
+Tests are dependent on pre-created MySQL database for persistence.
+Please set env var
+
+    $ export TEST_DB_URI=mysql://<your-user>:<your-user-password>@<mysql-host>:<mysql-port>/<functions-db>
+
+Testing: PEP8
+-------------
+
+In order to run `PEP8` style checks run following command:
+
+    $ tox -e pep8
+
+
+Testing: Functional
+-------------------
+
+In order to run `functional` tests run following command:
+
+    $ tox -e py35-functional
+
+Pros:
+
+* lightweight (controllers and DB models testing)
+* no OpenStack required
+* no IronFunctions required
+
+Cons:
+
+* MySQL server required
+* OpenStack authentication is not tested
+* IronFunctions API stubbed with fake implementation
+
+Testing: Integration
+--------------------
+
+TBD
+
+
+Testing: Coverage regression
+----------------------------
+
+In order to build quality software it is necessary to keep test coverage at its highest point.
+So, as part of `Tox` testing new check was added - functional test coverage regression.
+In order to run it use following command:
+
+    $ tox -e py35-functional-regression
 
 3rd party bugs to resolve
 -------------------------

@@ -14,3 +14,4 @@ python-troveclient.iml
 releasenotes/build
 .coverage.*
 *.json
+.cache

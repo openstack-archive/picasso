@@ -4,7 +4,7 @@
 
 flake8==2.5.0 # fix for https://gitlab.com/pycqa/flake8/issues/94
 hacking<0.11,>=0.10.0
-coverage>=4.0 # Apache-2.0
 sphinx!=1.3b1,<1.4,>=1.2.1 # BSD
-testrepository>=0.0.18 # Apache-2.0/BSD
 testtools>=1.4.0 # MIT
+pytest-aiohttp==0.1.3
+pytest-cov==2.4.0

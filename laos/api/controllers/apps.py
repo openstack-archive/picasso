@@ -195,13 +195,24 @@ class AppV1Controller(controllers.ServiceControllerBase):
         """
         project_id = request.match_info.get('project_id')
         app = request.match_info.get('app')
-
+        c = config.Config.config_instance()
+        fnclient = c.functions_client
         if not (await app_model.Apps.exists(app, project_id)):
             return web.json_response(data={
                 "error": {
                     "message": "App {0} not found".format(app),
                 }
             }, status=404)
+
+        fn_app = await fnclient.apps.show(app, loop=c.event_loop)
+        fn_app_routes = await fn_app.routes.list(loop=c.event_loop)
+
+        if fn_app_routes:
+            return web.json_response(data={
+                "error": {
+                    "message": ("Unable to delete app {} with routes".format(app))
+                }
+            }, status=403)
 
         await app_model.Apps.delete(
             project_id=project_id, name=app)

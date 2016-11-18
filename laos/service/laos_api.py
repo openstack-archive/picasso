@@ -116,13 +116,13 @@ def server(host, port, db_uri,
         api_version=functions_api_version,
     )
     loop.run_until_complete(fnclient.ping(loop=loop))
-    conn = config.Connection(db_uri, loop=loop)
+    connection_pool = config.Connection(db_uri, loop=loop)
 
     config.Config(
         auth_url=keystone_endpoint,
         functions_client=fnclient,
         logger=logger,
-        connection=conn,
+        connection=connection_pool,
         event_loop=loop,
     )
 
