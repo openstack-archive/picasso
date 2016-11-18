@@ -194,6 +194,15 @@ Testing: Integration
 TBD
 
 
+Testing: Coverage regression
+----------------------------
+
+In order to build quality software it is necessary to keep test coverage at its highest point.
+So, as part of `Tox` testing new check was added - functional test coverage regression.
+In order to run it use next command:
+
+    $ tox -e py35-functional-regression
+
 3rd party bugs to resolve
 -------------------------
 

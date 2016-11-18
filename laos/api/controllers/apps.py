@@ -211,7 +211,7 @@ class AppV1Controller(controllers.ServiceControllerBase):
             return web.json_response(data={
                 "error": {
                     "message": ("App {} has routes, "
-                                "delete them in first place")
+                                "delete them in first place".format(app))
                 }
             }, status=403)
 

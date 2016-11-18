@@ -60,3 +60,23 @@ class TestApps(base.LaosFunctionalTestsBase):
             self.test_client.apps.delete("unknown"))
         self.assertEqual(404, http_status)
         self.assertIn("error", json)
+
+    def test_delete_with_routes(self):
+        app_name = "testapp"
+        app, _ = self.testloop.run_until_complete(
+            self.test_client.apps.create(app_name))
+        self.testloop.run_until_complete(
+            self.test_client.routes.create(
+                app["app"]["name"], **self.route_data)
+        )
+        attempt, status = self.testloop.run_until_complete(
+            self.test_client.apps.delete(app["app"]["name"])
+        )
+        self.testloop.run_until_complete(
+            self.test_client.routes.delete(
+                app["app"]["name"], self.route_data["path"])
+        )
+        self.assertEqual(403, status)
+        self.assertIn("error", attempt)
+        self.assertIn("message", attempt["error"])
+        self.assertIn("has routes", attempt["error"]["message"])
