@@ -146,7 +146,53 @@ Once server is launched you can navigate to:
 
     http://<laos-host>:<laos-port>/api
 
-Or if you need to create 
+to see recent API docs
+
+Testing (general information)
+-----------------------------
+
+In order to run tests you need to install `Tox`:
+
+    $ pip install tox
+
+Also you'd need live MySQL instance with applied migrations.
+Tests are depending on pre-created MySQL database for persistence.
+Please set env var
+
+    $ export TEST_DB_URI=mysql://<your-user>:<your-user-password>@<mysql-host>:<mysql-port>/<functions-db>
+
+Testing: PEP8
+-------------
+
+In order to run `PEP8` style checks run next command:
+
+    $ tox -e pep8
+
+
+Testing: Functional
+-------------------
+
+In order to run `functional` tests run next command:
+
+    $ tox -e py35-functional
+
+Pros:
+
+* lightweight (controllers and DB models testing)
+* no OpenStack required
+* no IronFunctions required
+
+Cons:
+
+* MySQL server required
+* OpenStack authentication is not tested
+* IronFunctions API stabbed with fake implementation
+
+Testing: Integration
+--------------------
+
+TBD
+
 
 3rd party bugs to resolve
 -------------------------

@@ -37,18 +37,19 @@ class Connection(object, metaclass=utils.Singleton):
 
     def __init__(self, db_uri, loop=None):
         self.uri = db_uri
-        self.engine = loop.run_until_complete(self.get_engine(loop=loop))
+        self.loop = loop
+        self.pool = loop.run_until_complete(self.get_pool())
         self.loop = loop
 
-    def get_engine(self, loop=None):
+    def get_pool(self):
         username, password, host, port, db_name = utils.split_db_uri(self.uri)
         return aiomysql.create_pool(host=host, port=port if port else 3306,
                                     user=username, password=password,
-                                    db=db_name, loop=loop)
+                                    db=db_name, loop=self.loop)
 
     @classmethod
     def from_class(cls):
-        return cls._instance.engine
+        return cls._instance.pool
 
 
 class FunctionsClient(client.FunctionsAPIV1, metaclass=utils.Singleton):

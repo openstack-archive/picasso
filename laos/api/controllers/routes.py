@@ -178,7 +178,7 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
 
         setattr(new_fn_route, "is_public", stored_route.public)
         view = app_view.AppRouteView(
-            api_url, project_id, [new_fn_route]).view()
+            api_url, project_id, [new_fn_route]).view_one()
 
         return web.json_response(data={
             "route": view,
@@ -244,7 +244,7 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
         return web.json_response(data={
             "route": app_view.AppRouteView(api_url,
                                            project_id,
-                                           [route]).view().pop(),
+                                           [route]).view_one(),
             "message": "App route successfully loaded"
         }, status=200)
 

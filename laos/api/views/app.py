@@ -38,6 +38,9 @@ class AppRouteView(object):
         self.api_url = api_url
         self.project_id = project_id
 
+    def view_one(self):
+        return self.view().pop()
+
     def view(self):
         view = []
         for route in self.routes:
