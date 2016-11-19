@@ -34,6 +34,7 @@ setuptools.setup(
         "aiomysql==0.0.9",
         "alembic==0.8.8",
         "click==6.6",
+        "python-functionsclient==0.0.1",
         "keystoneauth1==2.15.0",
         "python-keystoneclient==3.6.0",
         "aiohttp-swagger==1.0.2",
