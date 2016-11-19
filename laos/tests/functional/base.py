@@ -12,13 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import asyncio
 import collections
-import datetime
 import os
 import testtools
 import uuid
-import uvloop
 
 from laos.api.controllers import apps
 from laos.api.controllers import routes
@@ -28,27 +25,16 @@ from laos.api.middleware import content_type
 
 from laos.common.base import service
 from laos.common import config
-from laos.common import logger as log
 
-
+from laos.tests.common import base
+from laos.tests.common import client
 from laos.tests.fakes import functions_api
-from laos.tests.functional import client
 
 
-class LaosFunctionalTestsBase(testtools.TestCase):
+class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):
 
     def setUp(self):
-        try:
-            self.testloop = asyncio.get_event_loop()
-        except Exception:
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-            self.testloop = asyncio.get_event_loop()
-
-        logger = log.UnifiedLogger(
-            log_to_console=False,
-            filename=("/tmp/laos-integration-tests-run-{}.log"
-                      .format(datetime.datetime.now())),
-            level="DEBUG").setup_logger(__package__)
+        self.testloop, logger = self.get_loop_and_logger("functional")
 
         self.testapp = service.AbstractWebServer(
             host="localhost",
