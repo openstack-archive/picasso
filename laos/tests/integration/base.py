@@ -60,7 +60,7 @@ class LaosIntegrationTestsBase(base.LaosTestsBase, testtools.TestCase):
             loop=self.testloop, logger=logger, debug=True)
 
         self.test_client = client.ProjectBoundLaosTestClient(
-            self.test_app.root_service, project_id, headers={
+            self.test_app.root, project_id, headers={
                 "X-Auth-Token": os_token
             })
         self.testloop.run_until_complete(

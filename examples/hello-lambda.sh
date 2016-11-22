@@ -70,16 +70,16 @@ echo -e "Show app public route\n"
 curl ${LAOS_API_URL}/v1/${OS_PROJECT_ID}/apps/${app_name}/routes/hello-sync-public -H "X-Auth-Token:${OS_TOKEN}" -H "Content-Type: application/json" | python3 -mjson.tool
 
 echo -e "Running app sync private route\n"
-curl -X POST -d '{"name": "Johnny"}' ${LAOS_API_URL}/private/${OS_PROJECT_ID}/${app_name}/hello-sync-private -H "X-Auth-Token:${OS_TOKEN}" -H "Content-Type: application/json" | python3 -mjson.tool
+curl -X POST -d '{"name": "Johnny"}' ${LAOS_API_URL}/v1/r/${OS_PROJECT_ID}/${app_name}/hello-sync-private -H "X-Auth-Token:${OS_TOKEN}" -H "Content-Type: application/json" | python3 -mjson.tool
 
 echo -e "Running app sync public route\n"
-curl -X POST -d '{"name": "Johnny"}' ${LAOS_API_URL}/public/${app_name}/hello-sync-public -H "Content-Type: application/json" | python3 -mjson.tool
+curl -X POST -d '{"name": "Johnny"}' ${LAOS_API_URL}/r/${app_name}/hello-sync-public -H "Content-Type: application/json" | python3 -mjson.tool
 
 echo -e "Creating app async route\n"
 curl -X POST -d '{"route":{"type": "async", "path": "/hello-async-private", "image": "iron/hello", "is_public": "false"}}' ${LAOS_API_URL}/v1/${OS_PROJECT_ID}/apps/${app_name}/routes -H "X-Auth-Token:${OS_TOKEN}" -H "Content-Type: application/json" | python3 -mjson.tool
 
 echo -e "Running app async route\n"
-curl -X POST -d '{"name": "Johnny"}' ${LAOS_API_URL}/private/${OS_PROJECT_ID}/${app_name}/hello-async-private -H "X-Auth-Token:${OS_TOKEN}" -H "Content-Type: application/json" | python3 -mjson.tool
+curl -X POST -d '{"name": "Johnny"}' ${LAOS_API_URL}/v1/r/${OS_PROJECT_ID}/${app_name}/hello-async-private -H "X-Auth-Token:${OS_TOKEN}" -H "Content-Type: application/json" | python3 -mjson.tool
 
 echo -e "Deleting app route\n"
 curl -X DELETE ${LAOS_API_URL}/v1/${OS_PROJECT_ID}/apps/${app_name}/routes/hello-sync-public -H "X-Auth-Token:${OS_TOKEN}" -H "Content-Type: application/json" | python3 -mjson.tool

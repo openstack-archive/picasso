@@ -17,13 +17,14 @@ import os
 import testtools
 import uuid
 
+from aioservice.http import service
+
 from laos.api.controllers import apps
 from laos.api.controllers import routes
 from laos.api.controllers import runnable
 from laos.api.controllers import tasks
 from laos.api.middleware import content_type
 
-from laos.common.base import service
 from laos.common import config
 
 from laos.tests.common import base
@@ -36,34 +37,30 @@ class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):
     def setUp(self):
         self.testloop, logger = self.get_loop_and_logger("functional")
 
-        self.testapp = service.AbstractWebServer(
-            host="localhost",
+        v1_service = service.VersionedService(
+            [
+                apps.AppV1Controller,
+                routes.AppRouteV1Controller,
+                tasks.TasksV1Controller,
+                runnable.RunnableV1Controller,
+            ], middleware=[
+                content_type.content_type_validator
+            ]
+        )
+        public_runnable = service.VersionedService(
+            [
+                runnable.PublicRunnableV1Controller,
+            ], middleware=[
+                content_type.content_type_validator,
+            ]
+        )
+        self.testapp = service.HTTPService(
+            [v1_service, public_runnable],
             port=10001,
-            private_controllers={
-                "v1": [
-                    apps.AppV1Controller,
-                    routes.AppRouteV1Controller,
-                    tasks.TasksV1Controller,
-                ],
-                "private": [
-                    runnable.RunnableV1Controller,
-                ]
-            },
-            public_controllers={
-                "public": [
-                    runnable.PublicRunnableV1Controller,
-                ],
-            },
-            private_middlewares=[
-                content_type.content_type_validator,
-            ],
-            public_middlewares=[
-                content_type.content_type_validator,
-            ],
             event_loop=self.testloop,
             logger=logger,
             debug=True,
-        ).root_service
+        ).root
 
         connection_pool = config.Connection(
             os.getenv("TEST_DB_URI"), loop=self.testloop)
