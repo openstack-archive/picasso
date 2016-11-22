@@ -12,6 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import aiohttp
+import json
 import os
 import testtools
 
@@ -21,35 +23,75 @@ from laos.service import laos_api
 from laos.tests.common import base
 from laos.tests.common import client
 
+from urllib import parse
+
 
 class LaosIntegrationTestsBase(base.LaosTestsBase, testtools.TestCase):
+
+    async def authenticate(self, os_user, os_pass, os_project, url):
+        auth_request_data = {
+            "auth": {
+                "identity": {
+                    "methods": ["password"],
+                    "password": {
+                        "user": {
+                            "name": os_user,
+                            "domain": {"id": "default"},
+                            "password": os_pass
+                        }
+                    }
+                },
+                "scope": {
+                    "project": {
+                        "name": os_project,
+                        "domain": {"id": "default"}
+                    }
+                }
+            }
+        }
+        with aiohttp.ClientSession(loop=self.testloop) as session:
+            response = await session.post(
+                "{}/auth/tokens".format(url),
+                data=json.dumps(auth_request_data),
+                headers={
+                    "Content-Type": "application/json"
+                },
+                timeout=20)
+            response.raise_for_status()
+            result = await response.json()
+            return (response.headers["X-Subject-Token"],
+                    result["token"]["project"]["id"])
 
     def setUp(self):
 
         self.testloop, logger = self.get_loop_and_logger("integration")
 
-        (functions_host, functions_port,
-         functions_api_protocol,
-         functions_api_version, db_uri,
-         keystone_endpoint, project_id, os_token) = (
-            os.getenv("FUNCTIONS_HOST"), os.getenv("FUNCTIONS_PORT", 8080),
-            os.getenv("FUNCTIONS_API_PROTO", "http"),
-            os.getenv("FUNCTIONS_API_VERSION", "v1"), os.getenv("TEST_DB_URI"),
-            os.getenv("OS_AUTH_URL"), os.getenv("OS_PROJECT_ID"),
-            os.getenv("OS_TOKEN"),
+        (functions_url, db_uri,
+         os_auth_url, os_user, os_pass, os_project) = (
+            os.getenv("FUNCTIONS_API_URL", "http://localhost:8080/v1"),
+            os.getenv("TEST_DB_URI"),
+            os.getenv("OS_AUTH_URL"),
+            os.getenv("OS_USERNAME"),
+            os.getenv("OS_PASSWORD"),
+            os.getenv("OS_PROJECT_NAME"),
         )
 
+        if not all([db_uri, os_auth_url, os_user, os_pass, os_project]):
+            raise self.skipTest("Not all test env variables were set.")
+
+        parts = parse.urlparse(functions_url)
+
         fnclient = config.FunctionsClient(
-            functions_host,
-            api_port=functions_port,
-            api_protocol=functions_api_protocol,
-            api_version=functions_api_version,
+            parts.hostname,
+            api_port=parts.port,
+            api_protocol=parts.scheme,
+            api_version=parts.path[1:]
         )
         self.testloop.run_until_complete(fnclient.ping(loop=self.testloop))
         connection_pool = config.Connection(db_uri, loop=self.testloop)
 
         config.Config(
-            auth_url=keystone_endpoint,
+            auth_url=os_auth_url,
             functions_client=fnclient,
             logger=logger,
             connection=connection_pool,
@@ -58,6 +100,11 @@ class LaosIntegrationTestsBase(base.LaosTestsBase, testtools.TestCase):
 
         self.test_app = laos_api.API(
             loop=self.testloop, logger=logger, debug=True)
+
+        os_token, project_id = self.testloop.run_until_complete(
+            self.authenticate(
+                os_user, os_pass,
+                os_project, os_auth_url))
 
         self.test_client = client.ProjectBoundLaosTestClient(
             self.test_app.root, project_id, headers={

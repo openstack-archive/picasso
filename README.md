@@ -190,66 +190,20 @@ Testing: Integration
 Integration tests are dependent on following env variables:
 
 * TEST_DB_URI - similar to functional tests, database endpoint
-* FUNCTIONS_HOST - IronFunctions API host
-* FUNCTIONS_PORT - IronFunctions API port
-* FUNCTIONS_API_PROTO - IronFunctions API protocol
-* FUNCTIONS_API_VERSION - IronFunctions API version
+* FUNCTIONS_API_URL - IronFunctions API URL (default value - `http://localhost:8080/v1`)
 * OS_AUTH_URL - OpenStack Identity endpoint
-* OS_PROJECT_ID - OpenStack user-specific project ID
-* OS_TOKEN - OpenStack user project-bound auth token
-
-How to get token? - Set env variables:
-
-* OS_USERNAME
-* OS_PASSWORD
-* OS_PROJECT_NAME
-
-and run following command:
-
-    echo -e "{
-      \"auth\": {
-        \"identity\": {
-          \"methods\": [\"password\"],
-          \"password\": {
-            \"user\": {
-              \"name\": \"${OS_USERNAME:-admin}\",
-              \"domain\": { \"id\": \"${OS_DOMAIN:-default}\" },
-              \"password\": \"${OS_PASSWORD:-root}\"
-            }
-          }
-        },
-        \"scope\": {
-          \"project\": {
-            \"name\": \"${OS_PROJECT_NAME:-admin}\",
-            \"domain\": {\"id\": \"${OS_DOMAIN:-default}\" }
-          }
-        }
-      }
-    }" >> token_request.json
-
-After that:
-
-    export OS_TOKEN=`curl -si -d @token_request.json -H "Content-type: application/json" ${OS_AUTH_URL}/auth/tokens | awk '/X-Subject-Token/ {print $2}'`
-
-If variable remains empty, please check your authentication parameters specified in `token_request.json`.
-
-How to get project ID? - Use following command
-
-    export RAW_PrID=`curl -si -d @token_request.json -H "Content-type: application/json" ${OS_AUTH_URL}/auth/tokens | grep Default | awk '{print $20}'`
-    export OS_PROJECT_ID=${RAW_PrID:1:-2}
-
-If variable remains empty, please check your authentication parameters specified in `token_request.json`.
+* OS_PROJECT_NAME - OpenStack user-specific project name
+* OS_USERNAME - OpenStack user name
+* OS_PASSWORD - OpenStack user user password
 
 To run tests use following command:
 
     export TEST_DB_URI=mysql://<your-user>:<your-user-password>@<mysql-host>:<mysql-port>/<functions-db>
-    export FUNCTIONS_HOST=<functions-host>
-    export FUNCTIONS_PORT=<functions-port>
-    export FUNCTIONS_API_PROTO=<functions-api-protocol>
-    export FUNCTIONS_API_VERSION=<functions-api-version>
-    export OS_AUTH_URL=<openstack-idenitity-url>
-    export OS_PROJECT_ID=<project-id>
-    export OS_TOKEN=<project-bound-auth-token>
+    export FUNCTIONS_API_URL=<functions-api-protocol>://<functions-host>:<functions-port>/<functions-api-version>
+    export OS_AUTH_URL=<identity-api-protocol>://<identity-host>:<identity-port>/<identity-api-version>
+    export OS_PROJECT_NAME=<project-name>
+    export OS_USERNAME=<project-name>
+    export OS_PASSWORD=<project-name>
     tox -epy35-integration
 
 Testing: Coverage regression
@@ -270,10 +224,6 @@ IronFunctions:
 * https://github.com/iron-io/functions/issues/296
 * https://github.com/iron-io/functions/issues/275
 * https://github.com/iron-io/functions/issues/274
-
-aiohttp_swagger:
-
-* https://github.com/cr0hn/aiohttp-swagger/issues/12 ([fix proposed](https://github.com/cr0hn/aiohttp-swagger/pull/13))
 
 TODOs
 -----
