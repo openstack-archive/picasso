@@ -16,13 +16,15 @@ from aiohttp import web
 
 # from laos.models import app as app_model
 
-from laos.common.base import controllers
+from aioservice.http import controller
+from aioservice.http import requests
+
 # from laos.common import config
 
 
 # TODO(denismakogon): disabled until
 # https://github.com/iron-io/functions/issues/275
-class TasksV1Controller(controllers.ServiceControllerBase):
+class TasksV1Controller(controller.ServiceController):
 
     controller_name = "tasks"
     version = "v1"
@@ -33,7 +35,7 @@ class TasksV1Controller(controllers.ServiceControllerBase):
     # - on each request check if route is public our private
     #   * reject with 401 if route is private
     #   * accept with 200 if route is public
-    @controllers.api_action(
+    @requests.api_action(
         method='GET', route='{project_id}/tasks')
     async def list(self, request, **kwargs):
         """
@@ -63,7 +65,7 @@ class TasksV1Controller(controllers.ServiceControllerBase):
             }
         }, status=405)
 
-    @controllers.api_action(
+    @requests.api_action(
         method='GET', route='{project_id}/tasks/{task}')
     async def show(self, request, **kwargs):
         """

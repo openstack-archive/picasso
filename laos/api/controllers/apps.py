@@ -14,20 +14,20 @@
 
 from aiohttp import web
 
+from aioservice.http import controller
+from aioservice.http import requests
+
 from laos.api.views import app as app_view
-
-from laos.common.base import controllers
 from laos.common import config
-
 from laos.models import app as app_model
 
 
-class AppV1Controller(controllers.ServiceControllerBase):
+class AppV1Controller(controller.ServiceController):
 
     controller_name = "apps"
     version = "v1"
 
-    @controllers.api_action(method='GET', route='{project_id}/apps')
+    @requests.api_action(method='GET', route='{project_id}/apps')
     async def list(self, request, **kwargs):
         """
         ---
@@ -59,7 +59,7 @@ class AppV1Controller(controllers.ServiceControllerBase):
             status=200
         )
 
-    @controllers.api_action(method='POST', route='{project_id}/apps')
+    @requests.api_action(method='POST', route='{project_id}/apps')
     async def create(self, request, **kwargs):
         """
         ---
@@ -118,7 +118,7 @@ class AppV1Controller(controllers.ServiceControllerBase):
             }, status=200
         )
 
-    @controllers.api_action(method='GET', route='{project_id}/apps/{app}')
+    @requests.api_action(method='GET', route='{project_id}/apps/{app}')
     async def get(self, request, **kwargs):
         """
         ---
@@ -161,7 +161,7 @@ class AppV1Controller(controllers.ServiceControllerBase):
         )
     # TODO(denismakogon): disabled until iron-io/functions/pull/259
     #
-    # @controllers.api_action(method='PUT', route='{project_id}/apps/{app}')
+    # @requests.api_action(method='PUT', route='{project_id}/apps/{app}')
     # async def update(self, request, **kwargs):
     #     log = config.Config.config_instance().logger
     #     project_id = request.match_info.get('project_id')
@@ -176,7 +176,7 @@ class AppV1Controller(controllers.ServiceControllerBase):
     #         status=200
     #     )
 
-    @controllers.api_action(method='DELETE', route='{project_id}/apps/{app}')
+    @requests.api_action(method='DELETE', route='{project_id}/apps/{app}')
     async def delete(self, request, **kwargs):
         """
         ---
@@ -210,7 +210,8 @@ class AppV1Controller(controllers.ServiceControllerBase):
         if fn_app_routes:
             return web.json_response(data={
                 "error": {
-                    "message": ("Unable to delete app {} with routes".format(app))
+                    "message": ("Unable to delete app {} "
+                                "with routes".format(app))
                 }
             }, status=403)
 

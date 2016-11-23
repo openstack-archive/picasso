@@ -16,27 +16,35 @@ from laos.tests.common import routes as routes_suite
 from laos.tests.functional import base
 
 
-class TestAppRoutes(base.LaosFunctionalTestsBase,
-                    routes_suite.AppRoutesTestSuite):
+class TestIntegrationAppRoutes(base.LaosFunctionalTestsBase,
+                               routes_suite.AppRoutesTestSuite):
 
     def test_list_routes_from_unknown_app(self):
-        super(TestAppRoutes, self).list_routes_from_unknown_app()
+        super(
+            TestIntegrationAppRoutes, self
+        ).list_routes_from_unknown_app()
 
     def test_list_routes_from_existing_app(self):
-        super(TestAppRoutes, self).list_routes_from_existing_app()
+        super(
+            TestIntegrationAppRoutes, self
+        ).list_routes_from_existing_app()
 
     def test_show_unknown_route_from_existing_app(self):
         super(
-            TestAppRoutes, self
+            TestIntegrationAppRoutes, self
         ).show_unknown_route_from_existing_app()
 
     def test_delete_unknown_route_from_existing_app(self):
         super(
-            TestAppRoutes, self
+            TestIntegrationAppRoutes, self
         ).delete_unknown_route_from_existing_app()
 
     def test_create_and_delete_route(self):
-        super(TestAppRoutes, self).create_and_delete_route()
+        super(
+            TestIntegrationAppRoutes, self
+        ).create_and_delete_route()
 
     def test_double_create_route(self):
-        super(TestAppRoutes, self).double_create_route()
+        super(
+            TestIntegrationAppRoutes, self
+        ).double_create_route()

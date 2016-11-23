@@ -16,20 +16,20 @@ import json
 
 from aiohttp import web
 
+from aioservice.http import controller
+from aioservice.http import requests
+
 from laos.api.views import app as app_view
-
-from laos.common.base import controllers
 from laos.common import config
-
 from laos.models import app as app_model
 
 
-class AppRouteV1Controller(controllers.ServiceControllerBase):
+class AppRouteV1Controller(controller.ServiceController):
 
     controller_name = "routes"
     version = "v1"
 
-    @controllers.api_action(
+    @requests.api_action(
         method='GET', route='{project_id}/apps/{app}/routes')
     async def list(self, request, **kwargs):
         """
@@ -82,7 +82,7 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
             "message": "Successfully loaded app routes",
         }, status=200)
 
-    @controllers.api_action(
+    @requests.api_action(
         method='POST', route='{project_id}/apps/{app}/routes')
     async def create(self, request, **kwargs):
         """
@@ -185,7 +185,7 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
             "message": "App route successfully created"
         }, status=200)
 
-    @controllers.api_action(
+    @requests.api_action(
         method='GET', route='{project_id}/apps/{app}/routes/{route}')
     async def get(self, request, **kwargs):
         """
@@ -248,7 +248,7 @@ class AppRouteV1Controller(controllers.ServiceControllerBase):
             "message": "App route successfully loaded"
         }, status=200)
 
-    @controllers.api_action(
+    @requests.api_action(
         method='DELETE', route='{project_id}/apps/{app}/routes/{route}')
     async def delete(self, request, **kwargs):
         """

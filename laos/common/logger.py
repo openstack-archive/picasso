@@ -21,7 +21,7 @@ from laos.common import utils
 
 def common_logger_setup(
         level=logging.DEBUG,
-        filename='/tmp/aiorchestra.log',
+        filename='/tmp/laos-api.log',
         log_formatter='[%(asctime)s] - '
                       '%(name)s - '
                       '%(levelname)s - '

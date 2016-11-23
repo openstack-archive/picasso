@@ -12,13 +12,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import asyncio
 import collections
-import datetime
 import os
 import testtools
 import uuid
-import uvloop
+
+from aioservice.http import service
 
 from laos.api.controllers import apps
 from laos.api.controllers import routes
@@ -26,58 +25,42 @@ from laos.api.controllers import runnable
 from laos.api.controllers import tasks
 from laos.api.middleware import content_type
 
-from laos.common.base import service
 from laos.common import config
-from laos.common import logger as log
 
-
+from laos.tests.common import base
+from laos.tests.common import client
 from laos.tests.fakes import functions_api
-from laos.tests.functional import client
 
 
-class LaosFunctionalTestsBase(testtools.TestCase):
+class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):
 
     def setUp(self):
-        try:
-            self.testloop = asyncio.get_event_loop()
-        except Exception:
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-            self.testloop = asyncio.get_event_loop()
+        self.testloop, logger = self.get_loop_and_logger("functional")
 
-        logger = log.UnifiedLogger(
-            log_to_console=False,
-            filename=("/tmp/laos-integration-tests-run-{}.log"
-                      .format(datetime.datetime.now())),
-            level="DEBUG").setup_logger(__package__)
-
-        self.testapp = service.AbstractWebServer(
-            host="localhost",
+        v1_service = service.VersionedService(
+            [
+                apps.AppV1Controller,
+                routes.AppRouteV1Controller,
+                tasks.TasksV1Controller,
+                runnable.RunnableV1Controller,
+            ], middleware=[
+                content_type.content_type_validator
+            ]
+        )
+        public_runnable = service.VersionedService(
+            [
+                runnable.PublicRunnableV1Controller,
+            ], middleware=[
+                content_type.content_type_validator,
+            ]
+        )
+        self.testapp = service.HTTPService(
+            [v1_service, public_runnable],
             port=10001,
-            private_controllers={
-                "v1": [
-                    apps.AppV1Controller,
-                    routes.AppRouteV1Controller,
-                    tasks.TasksV1Controller,
-                ],
-                "private": [
-                    runnable.RunnableV1Controller,
-                ]
-            },
-            public_controllers={
-                "public": [
-                    runnable.PublicRunnableV1Controller,
-                ],
-            },
-            private_middlewares=[
-                content_type.content_type_validator,
-            ],
-            public_middlewares=[
-                content_type.content_type_validator,
-            ],
             event_loop=self.testloop,
             logger=logger,
             debug=True,
-        ).root_service
+        ).root
 
         connection_pool = config.Connection(
             os.getenv("TEST_DB_URI"), loop=self.testloop)

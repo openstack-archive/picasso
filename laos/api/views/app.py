@@ -45,11 +45,11 @@ class AppRouteView(object):
         view = []
         for route in self.routes:
             if not route.is_public:
-                path = ("{}/private/{}/{}{}".format(
+                path = ("{}/v1/r/{}/{}{}".format(
                     self.api_url, self.project_id,
                     route.appname, route.path))
             else:
-                path = ("{}/public/{}{}".format(
+                path = ("{}/r/{}{}".format(
                     self.api_url, route.appname, route.path))
             view.append({
                 "path": path,

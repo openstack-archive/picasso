@@ -74,12 +74,15 @@ class RoutesV1(object):
 
 class ProjectBoundLaosTestClient(test_utils.TestClient):
 
-    def __init__(self, app_or_server, project_id):
+    def __init__(self, app_or_server, project_id, **kwargs):
         super(ProjectBoundLaosTestClient, self).__init__(app_or_server)
         self.project_id = project_id
         self.headers = {
             "Content-Type": "application/json"
         }
+        if kwargs.get("headers"):
+            self.headers.update(kwargs.get("headers"))
+
         self.apps = AppsV1(self)
         self.routes = RoutesV1(self)
 
