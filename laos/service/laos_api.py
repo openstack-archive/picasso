@@ -15,7 +15,9 @@
 import asyncio
 
 import click
+import os
 import uvloop
+
 
 from aioservice.http import service
 
@@ -29,6 +31,8 @@ from laos.api.middleware import keystone
 
 from laos.common import config
 from laos.common import logger as log
+
+from urllib import parse
 
 
 class API(service.HTTPService):
@@ -71,31 +75,33 @@ class API(service.HTTPService):
 
 
 @click.command(name='laos-api')
-@click.option('--host', default='0.0.0.0', help='API service bind host.')
-@click.option('--port', default=10001, help='API service bind port.')
-@click.option('--db-uri', default='mysql://root:root@localhost/functions',
+@click.option('--host',
+              default=os.getenv("LAOS_HOST", '0.0.0.0'),
+              help='API service host.')
+@click.option('--port', default=int(os.getenv("LAOS_PORT", 10001)),
+              help='API service port.')
+@click.option('--db-uri',
+              default=os.getenv(
+                  "LAOS_DB",
+                  'mysql://root:root@localhost/functions'),
               help='LaOS persistence storage URI.')
-@click.option('--keystone-endpoint', default='http://localhost:5000/v3',
+@click.option('--keystone-endpoint',
+              default=os.getenv("KEYSTONE_ENDPOINT",
+                                'http://localhost:5000/v3'),
               help='OpenStack Identity service endpoint.')
-@click.option('--functions-host', default='localhost',
+@click.option('--functions-url',
+              default=os.getenv(
+                  "FUNCTIONS_URL", 'http://localhost:8080/v1'),
               help='Functions API host')
-@click.option('--functions-port', default=10501,
-              help='Functions API port')
-@click.option('--functions-api-version', default='v1',
-              help='Functions API version')
-@click.option('--functions-api-protocol', default='http',
-              help='Functions API protocol')
-@click.option('--log-level', default='INFO',
+@click.option('--log-level',
+              default=os.getenv("LAOS_LOG_LEVEL", 'INFO'),
               help='Logging file')
-@click.option('--log-file', default=None,
+@click.option('--log-file', default=os.getenv("LAOS_LOG_FILE"),
               help='Log file path')
 @click.option('--debug', default=False, is_flag=True)
 def server(host, port, db_uri,
            keystone_endpoint,
-           functions_host,
-           functions_port,
-           functions_api_version,
-           functions_api_protocol,
+           functions_url,
            log_level,
            log_file,
            debug,
@@ -111,11 +117,13 @@ def server(host, port, db_uri,
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     loop = asyncio.get_event_loop()
 
+    parts = parse.urlparse(functions_url)
+
     fnclient = config.FunctionsClient(
-        functions_host,
-        api_port=functions_port,
-        api_protocol=functions_api_protocol,
-        api_version=functions_api_version,
+        parts.hostname,
+        api_port=parts.port,
+        api_protocol=parts.scheme,
+        api_version=parts.path[1:]
     )
     loop.run_until_complete(fnclient.ping(loop=loop))
     connection_pool = config.Connection(db_uri, loop=loop)
