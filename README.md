@@ -99,10 +99,7 @@ Once it is finished you will have a console script `laos-api`:
       --port INTEGER                 API service bind port.
       --db-uri TEXT                  LaOS persistence storage URI.
       --keystone-endpoint TEXT       OpenStack Identity service endpoint.
-      --functions-host TEXT          Functions API host
-      --functions-port INTEGER       Functions API port
-      --functions-api-version TEXT   Functions API version
-      --functions-api-protocol TEXT  Functions API protocol
+      --functions-url TEXT           IronFunctions API URL
       --log-level TEXT               Logging file
       --log-file TEXT                Log file path
       --help                         Show this message and exit.
@@ -111,9 +108,36 @@ Minimum required options to start LaOS API service:
 
      --db-uri mysql://root:root@192.168.0.112/functions
      --keystone-endpoint http://192.168.0.112:5000/v3
-     --functions-host 192.168.0.112
-     --functions-port 10501
+     --functions-url http://192.168.0.112:8080/v1
      --log-level INFO
+
+Creating and running LaOS inside Docker container
+-------------------------------------------------
+
+As part of regular Python distribution, LaOS also has its own Docker container to run.
+There are two options:
+
+* run from sources
+* run from Docker Hub
+
+In order to build container from sources run following commands:
+
+    export DOCKER_HOST=tcp://<docker-host>:<docker-port>
+    docker build -t laos-api -f Dockerfile .
+
+After that it is required to create correct version of [Dockerfile.env](Dockerfile.env.example). 
+It container all required options to start LaOS API service properly.
+Once it is done run following commands:
+
+    docker run -d -p 10001:10001 --env-file Dockerfile.env laos-api
+
+Navigate to your web browser to check if service is running:
+
+    <docker-host>:10001/api
+
+or using CLI
+
+    curl -X GET http://<docker-host>:10001/api/swagger.json | python -mjson.tool
 
 Examining API
 -------------
