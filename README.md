@@ -74,9 +74,9 @@ Migrations
 ----------
 
 Once all dependencies are installed it is necessary to run database migrations.
-Before that please edit [alembic.ini](alembic.ini) line #32
+Before that it is necessary to set env variable:
 
-    sqlalchemy.url = mysql+pymysql://root:root@localhost/functions
+    export LAOS_MIGRATIONS_DB=mysql+pymysql://root:root@localhost/functions
 
 In this section please specify connection URI to your own MySQL database.
 Once the file is saved, just use alembic to apply the migrations:
