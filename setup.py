@@ -30,7 +30,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         "uvloop==0.6.0",
-        "aioservice==0.0.1",
+        "aioservice==0.0.2",
         "aiomysql==0.0.9",
         "alembic==0.8.8",
         "click==6.6",

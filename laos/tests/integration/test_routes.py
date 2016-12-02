@@ -12,8 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from laos.tests.common import routes as routes_suite
-from laos.tests.functional import base
+from ..common import routes as routes_suite
+from ..functional import base
 
 
 class TestIntegrationAppRoutes(base.LaosFunctionalTestsBase,

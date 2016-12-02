@@ -18,17 +18,17 @@ import uuid
 
 from aioservice.http import service
 
-from laos.api.controllers import apps
-from laos.api.controllers import routes
-from laos.api.controllers import runnable
-from laos.api.controllers import tasks
-from laos.api.middleware import content_type
+from ...api.controllers import apps
+from ...api.controllers import routes
+from ...api.controllers import runnable
+from ...api.controllers import tasks
+from ...api.middleware import content_type
 
-from laos.common import config
+from ...common import config
 
-from laos.tests.common import base
-from laos.tests.common import client
-from laos.tests.fakes import functions_api
+from ..common import base
+from ..common import client
+from ..fakes import functions_api
 
 
 class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):

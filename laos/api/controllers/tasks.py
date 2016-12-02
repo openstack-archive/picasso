@@ -14,12 +14,12 @@
 
 from aiohttp import web
 
-# from laos.models import app as app_model
+# from ...models import app as app_model
 
 from aioservice.http import controller
 from aioservice.http import requests
 
-# from laos.common import config
+# from ...common import config
 
 
 # TODO(denismakogon): disabled until

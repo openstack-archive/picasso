@@ -12,8 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from laos.tests.common import apps as apps_suite
-from laos.tests.functional import base
+from ..common import apps as apps_suite
+from ..functional import base
 
 
 class TestApps(base.LaosFunctionalTestsBase, apps_suite.AppsTestSuite):

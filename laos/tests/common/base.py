@@ -16,7 +16,7 @@ import asyncio
 import datetime
 import uvloop
 
-from laos.common import logger as log
+from ...common import logger as log
 
 
 class LaosTestsBase(object):

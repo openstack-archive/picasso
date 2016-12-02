@@ -16,7 +16,7 @@ import datetime
 import logging
 import sys
 
-from laos.common import utils
+from . import utils
 
 
 def common_logger_setup(

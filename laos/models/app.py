@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from laos.common import persistence
+from ..common import persistence
 
 
 class Apps(persistence.BaseDatabaseModel):

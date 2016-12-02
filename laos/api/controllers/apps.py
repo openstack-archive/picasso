@@ -17,9 +17,9 @@ from aiohttp import web
 from aioservice.http import controller
 from aioservice.http import requests
 
-from laos.api.views import app as app_view
-from laos.common import config
-from laos.models import app as app_model
+from ...common import config
+from ...models import app as app_model
+from ..views import app as app_view
 
 
 class AppV1Controller(controller.ServiceController):
@@ -202,12 +202,12 @@ class AppV1Controller(controller.ServiceController):
 
         stored_app = (await app_model.Apps.find_by(
             project_id=project_id, name=app_name)).pop()
-        c.logger.info("Updating an app {} for project: {} with data {}"
+        c.logger.info("Updating app {} for project: {} with data {}"
                       .format(app_name, project_id, str(data)))
         return web.json_response(
             data={
                 "app": app_view.AppView(stored_app, fn_app).view(),
-                "message": "App successfully update"
+                "message": "App successfully updated"
             },
             status=200
         )

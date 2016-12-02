@@ -17,7 +17,7 @@ from aiohttp import web
 from aioservice.http import controller
 from aioservice.http import requests
 
-from laos.common import config
+from ...common import config
 
 
 class RunnableMixin(object):

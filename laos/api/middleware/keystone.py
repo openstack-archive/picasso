@@ -18,7 +18,7 @@ from keystoneclient import client
 
 from aiohttp import web
 
-from laos.common import config
+from ...common import config
 
 
 async def auth_through_token(app: web.Application, handler):

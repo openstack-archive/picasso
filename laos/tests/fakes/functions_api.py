@@ -120,7 +120,7 @@ class FakeApps(object):
     async def delete(self, app_name, loop=None):
         if app_name not in APPS:
             raise client.FunctionsAPIException(
-                "App {} not exist.".format(app_name), 404)
+                "App {} not found.".format(app_name), 404)
         else:
             if APP_ROUTES[app_name]:
                 raise client.FunctionsAPIException(
