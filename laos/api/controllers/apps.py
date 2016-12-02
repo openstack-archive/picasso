@@ -159,22 +159,58 @@ class AppV1Controller(controller.ServiceController):
             },
             status=200
         )
-    # TODO(denismakogon): disabled until iron-io/functions/pull/259
-    #
-    # @requests.api_action(method='PUT', route='{project_id}/apps/{app}')
-    # async def update(self, request, **kwargs):
-    #     log = config.Config.config_instance().logger
-    #     project_id = request.match_info.get('project_id')
-    #     app = request.match_info.get('app')
-    #     data = await request.json()
-    #     log.info("Updating an app {} for project: {} with data {}"
-    #              .format(app, project_id, str(data)))
-    #     return web.json_response(
-    #         data={
-    #             "app": {}
-    #         },
-    #         status=200
-    #     )
+
+    @requests.api_action(method='PUT', route='{project_id}/apps/{app}')
+    async def update(self, request, **kwargs):
+        """
+        ---
+        description: Updating project-scoped app
+        tags:
+        - Apps
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: successful operation. Return "app" JSON
+            "401":
+                description: Not authorized.
+            "404":
+                description: App not found
+        """
+        project_id = request.match_info.get('project_id')
+        app_name = request.match_info.get('app')
+        data = await request.json()
+
+        if not (await app_model.Apps.exists(app_name, project_id)):
+            return web.json_response(data={
+                "error": {
+                    "message": "App {0} not found".format(app_name),
+                }
+            }, status=404)
+
+        c = config.Config.config_instance()
+        fnclient = c.functions_client
+        try:
+            fn_app = await fnclient.apps.update(
+                app_name, loop=c.event_loop, **data)
+        except Exception as ex:
+            return web.json_response(data={
+                "error": {
+                    "message": getattr(ex, "reason", str(ex)),
+                }
+            }, status=getattr(ex, "status", 500))
+
+        stored_app = (await app_model.Apps.find_by(
+            project_id=project_id, name=app_name)).pop()
+        c.logger.info("Updating an app {} for project: {} with data {}"
+                      .format(app_name, project_id, str(data)))
+        return web.json_response(
+            data={
+                "app": app_view.AppView(stored_app, fn_app).view(),
+                "message": "App successfully update"
+            },
+            status=200
+        )
 
     @requests.api_action(method='DELETE', route='{project_id}/apps/{app}')
     async def delete(self, request, **kwargs):
@@ -217,9 +253,8 @@ class AppV1Controller(controller.ServiceController):
 
         await app_model.Apps.delete(
             project_id=project_id, name=app)
-        # TODO(denismakogon): enable DELETE to IronFunctions when once
-        # https://github.com/iron-io/functions/issues/274 implemented
-        # fn_app = await fnclient.apps.delete(app, loop=c.event_loop)
+        await fnclient.apps.delete(app, loop=c.event_loop)
+
         return web.json_response(
             data={
                 "message": "App successfully deleted",

@@ -44,6 +44,10 @@ class AppsV1(object):
     async def delete(self, app_name):
         return await self.client.remove(self.app_path, app_name)
 
+    async def update(self, app_name, **data):
+        return await self.client.update(
+            self.app_path, app_name, **data)
+
 
 class RoutesV1(object):
 
@@ -51,6 +55,10 @@ class RoutesV1(object):
     routes_path = "/v1/{}/apps/{}/routes"
     # /v1/{project_id}/apps/{app}/routes{}
     route_path = routes_path + "{}"
+    # /v1/r/{project_id}/{app}{route}
+    private_execution_path = "/v1/r/{}/{}{}"
+    # /r/{app}{route}
+    public_execution_path = "/r/{}{}"
 
     def __init__(self, test_client):
         self.client = test_client
@@ -70,6 +78,19 @@ class RoutesV1(object):
     async def delete(self, app_name, path):
         return await self.client.remove(
             self.route_path, app_name, path)
+
+    async def update(self, app_name, path, **data):
+        return await self.client.update(
+            self.route_path, app_name, path, **data)
+
+    async def execute_private(self, app_name, path, **data):
+        return await self.client.execute(
+            self.private_execution_path, app_name, path, **data)
+
+    async def execute_public(self, app_name, path, **data):
+        return await self.client.execute(
+            self.public_execution_path, app_name, path,
+            ignore_project_id=True, **data)
 
 
 class ProjectBoundLaosTestClient(test_utils.TestClient):
@@ -111,5 +132,24 @@ class ProjectBoundLaosTestClient(test_utils.TestClient):
         resp = await  self.delete(
             route.format(self.project_id, resource_name, *parts),
             headers=self.headers)
+        json = await resp.json()
+        return json, resp.status
+
+    async def update(self, route_path, resource_name, *parts, **data):
+        resp = await self.put(
+            route_path.format(self.project_id, resource_name, *parts),
+            data=jsonlib.dumps(data),
+            headers=self.headers,)
+        json = await resp.json()
+        return json, resp.status
+
+    async def execute(self, route, resource_name, *parts,
+                      ignore_project_id=False, **data):
+        if not ignore_project_id:
+            route = route.format(self.project_id, resource_name, *parts)
+        else:
+            route = route.format(resource_name, *parts)
+        resp = await self.post(
+            route, data=jsonlib.dumps(data), headers=self.headers)
         json = await resp.json()
         return json, resp.status

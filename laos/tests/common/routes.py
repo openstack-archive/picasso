@@ -12,7 +12,38 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import contextlib
 import json as jsonlib
+
+
+@contextlib.contextmanager
+def setup_execute(self, app_name):
+    app, _ = self.testloop.run_until_complete(
+        self.test_client.apps.create(app_name)
+    )
+    new_app_name = app["app"]["name"]
+    route, _ = self.testloop.run_until_complete(
+        self.test_client.routes.create(
+            new_app_name, **self.route_data)
+    )
+    self.testloop.run_until_complete(
+        self.test_client.routes.update(
+            new_app_name, self.route_data["path"], **{
+                "type": "sync"
+            }
+        )
+    )
+    try:
+        yield new_app_name
+    except Exception as ex:
+        print(ex)
+    finally:
+        self.testloop.run_until_complete(
+            self.test_client.routes.delete(
+                new_app_name, self.route_data["path"])
+        )
+        self.testloop.run_until_complete(
+            self.test_client.apps.delete(new_app_name))
 
 
 class AppRoutesTestSuite(object):
@@ -26,8 +57,9 @@ class AppRoutesTestSuite(object):
         self.assertIn("not found", json["error"]["message"])
 
     def list_routes_from_existing_app(self):
+        app = "list_routes_from_existing_app"
         create_json, _ = self.testloop.run_until_complete(
-            self.test_client.apps.create("testapp"))
+            self.test_client.apps.create(app))
         json, status = self.testloop.run_until_complete(
             self.test_client.routes.list(create_json["app"]["name"])
         )
@@ -38,9 +70,10 @@ class AppRoutesTestSuite(object):
         self.assertIn("message", json)
 
     def show_unknown_route_from_existing_app(self):
+        app = "show_unknown_route_from_existing_app"
         path = "/unknown_path"
         create_json, _ = self.testloop.run_until_complete(
-            self.test_client.apps.create("testapp"))
+            self.test_client.apps.create(app))
         json, status = self.testloop.run_until_complete(
             self.test_client.routes.show(
                 create_json["app"]["name"], path)
@@ -53,8 +86,9 @@ class AppRoutesTestSuite(object):
         self.assertIn("not found", json["error"]["message"])
 
     def delete_unknown_route_from_existing_app(self):
+        app = "delete_unknown_route_from_existing_app"
         create_json, _ = self.testloop.run_until_complete(
-            self.test_client.apps.create("testapp"))
+            self.test_client.apps.create(app))
         json, status = self.testloop.run_until_complete(
             self.test_client.routes.delete(
                 create_json["app"]["name"], "/unknown_path")
@@ -67,18 +101,23 @@ class AppRoutesTestSuite(object):
         self.assertIn("not found", json["error"]["message"])
 
     def create_and_delete_route(self):
-        app, _ = self.testloop.run_until_complete(
-            self.test_client.apps.create("testapp"))
+        app_name = "create_and_delete_route"
+        created, _ = self.testloop.run_until_complete(
+            self.test_client.apps.create(app_name))
+        new_app_name = created["app"]["name"]
         route, create_status = self.testloop.run_until_complete(
             self.test_client.routes.create(
-                app["app"]["name"], **self.route_data)
+                new_app_name, **self.route_data)
         )
         route_deleted, delete_status = self.testloop.run_until_complete(
             self.test_client.routes.delete(
-                app["app"]["name"], self.route_data["path"])
+                new_app_name, self.route_data["path"])
         )
         self.testloop.run_until_complete(
-            self.test_client.apps.delete(app["app"]["name"]))
+            self.test_client.apps.delete(new_app_name))
+
+        print(route)
+
         after_post = route["route"]
         for k in self.route_data:
             if k == "path":
@@ -94,25 +133,77 @@ class AppRoutesTestSuite(object):
         self.assertIn("message", route_deleted)
 
     def double_create_route(self):
-        app, _ = self.testloop.run_until_complete(
-            self.test_client.apps.create("testapp"))
+        app = "double_create_route"
+        created_app, _ = self.testloop.run_until_complete(
+            self.test_client.apps.create(app))
+        new_app_name = created_app["app"]["name"]
+
         self.testloop.run_until_complete(
             self.test_client.routes.create(
-                app["app"]["name"], **self.route_data)
+                new_app_name, **self.route_data)
         )
 
         json, double_create_status = self.testloop.run_until_complete(
             self.test_client.routes.create(
-                app["app"]["name"], **self.route_data)
+                new_app_name, **self.route_data)
         )
         self.testloop.run_until_complete(
             self.test_client.routes.delete(
-                app["app"]["name"], self.route_data["path"])
+                new_app_name, self.route_data["path"])
         )
         self.testloop.run_until_complete(
-            self.test_client.apps.delete(app["app"]["name"]))
+            self.test_client.apps.delete(new_app_name))
 
         self.assertEqual(409, double_create_status)
         self.assertIn("error", json)
         self.assertIn("message", json["error"])
         self.assertIn("already exist", json["error"]["message"])
+
+    def update_route(self):
+        app = "update_route"
+        created, _ = self.testloop.run_until_complete(
+            self.test_client.apps.create(app)
+        )
+        new_app_name = created["app"]["name"]
+        route, _ = self.testloop.run_until_complete(
+            self.test_client.routes.create(
+                new_app_name, **self.route_data)
+        )
+        print(route)
+        updated, update_status = self.testloop.run_until_complete(
+            self.test_client.routes.update(
+                new_app_name, self.route_data["path"], **{
+                    "type": "sync"
+                }
+            )
+        )
+        print(updated)
+        self.testloop.run_until_complete(
+            self.test_client.routes.delete(
+                new_app_name, self.route_data["path"])
+        )
+        self.testloop.run_until_complete(
+            self.test_client.apps.delete(new_app_name))
+
+        self.assertEqual(200, update_status)
+        self.assertNotIn(route["route"]["type"], updated["route"]["type"])
+
+    def execute_private(self):
+        with setup_execute(self, "execute_private") as app_name:
+            result, status = self.testloop.run_until_complete(
+                self.test_client.routes.execute_private(
+                    app_name, self.route_data["path"]
+                )
+            )
+            self.assertIsNotNone(result)
+            self.assertEqual(200, status)
+
+    def execute_public(self):
+        with setup_execute(self, "execute_public") as app_name:
+            result, status = self.testloop.run_until_complete(
+                self.test_client.routes.execute_public(
+                    app_name, self.route_data["path"]
+                )
+            )
+            self.assertIsNotNone(result)
+            self.assertEqual(200, status)

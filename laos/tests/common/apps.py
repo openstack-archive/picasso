@@ -29,8 +29,9 @@ class AppsTestSuite(object):
         self.assertIn("error", json)
 
     def create_and_delete(self):
+        app = "create_and_delete"
         create_json, create_status = self.testloop.run_until_complete(
-            self.test_client.apps.create("testapp"))
+            self.test_client.apps.create(app))
         delete_json, delete_status = self.testloop.run_until_complete(
             self.test_client.apps.delete(create_json["app"]["name"]))
 
@@ -42,7 +43,7 @@ class AppsTestSuite(object):
         self.assertEqual(200, delete_status)
 
     def attempt_to_double_create(self):
-        app = "testapp"
+        app = "attempt_to_double_create"
         create_json, _ = self.testloop.run_until_complete(
             self.test_client.apps.create(app))
         err, status = self.testloop.run_until_complete(
@@ -60,7 +61,7 @@ class AppsTestSuite(object):
         self.assertIn("error", json)
 
     def delete_with_routes(self):
-        app_name = "testapp"
+        app_name = "delete_with_routes"
         app, _ = self.testloop.run_until_complete(
             self.test_client.apps.create(app_name))
         self.testloop.run_until_complete(
@@ -82,3 +83,16 @@ class AppsTestSuite(object):
         self.assertIn("message", attempt["error"])
         self.assertIn("with routes", attempt["error"]["message"])
         self.assertEqual(200, status_2)
+
+    def update_app(self):
+        app_name = "update_app"
+        app, _ = self.testloop.run_until_complete(
+            self.test_client.apps.create(app_name))
+        _, update_status = self.testloop.run_until_complete(
+            self.test_client.apps.update(
+                app["app"]["name"], config={}
+            )
+        )
+        self.testloop.run_until_complete(
+            self.test_client.apps.delete(app["app"]["name"]))
+        self.assertEqual(200, update_status)

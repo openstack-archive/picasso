@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import collections
 import os
 import testtools
 import uuid
@@ -78,20 +77,9 @@ class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):
         self.test_client = client.ProjectBoundLaosTestClient(
             self.testapp, self.project_id)
 
-        self.route_data = {
-            "type": "sync",
-            "path": "/hello-sync-private",
-            "image": "iron/hello",
-            "is_public": "false"
-        }
-
         self.testloop.run_until_complete(self.test_client.start_server())
         super(LaosFunctionalTestsBase, self).setUp()
 
     def tearDown(self):
-        functions_api.APPS = {}
-        functions_api.ROUTES = collections.defaultdict(list)
-        # ^ temporary solution,
-        # until https://github.com/iron-io/functions/issues/274 fixed
         self.testloop.run_until_complete(self.test_client.close())
         super(LaosFunctionalTestsBase, self).tearDown()

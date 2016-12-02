@@ -36,3 +36,6 @@ class TestIntegrationApps(base.LaosIntegrationTestsBase,
 
     def test_delete_with_routes(self):
         super(TestIntegrationApps, self).delete_with_routes()
+
+    def test_update_app(self):
+        super(TestIntegrationApps, self).update_app()

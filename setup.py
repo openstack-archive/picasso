@@ -34,7 +34,7 @@ setuptools.setup(
         "aiomysql==0.0.9",
         "alembic==0.8.8",
         "click==6.6",
-        "python-functionsclient==0.0.1",
+        "python-functionsclient==0.0.2",
         "keystoneauth1==2.15.0",
         "python-keystoneclient==3.6.0",
         "aiohttp-swagger==1.0.2",
@@ -46,8 +46,6 @@ setuptools.setup(
         'Intended Audience :: System Administrators',
         'Intended Audience :: Developers',
         'Environment :: No Input/Output (Daemon)',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Topic :: Software Development :: '
         'Libraries :: Python Modules',

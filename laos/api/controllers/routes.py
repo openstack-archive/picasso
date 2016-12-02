@@ -78,6 +78,7 @@ class AppRouteV1Controller(controller.ServiceController):
         return web.json_response(data={
             "routes": app_view.AppRouteView(api_url,
                                             project_id,
+                                            app,
                                             fn_app_routes).view(),
             "message": "Successfully loaded app routes",
         }, status=200)
@@ -166,7 +167,7 @@ class AppRouteV1Controller(controller.ServiceController):
             **data, loop=c.event_loop))
 
         stored_route = await app_model.Routes(
-            app_name=new_fn_route.appname,
+            app_name=app,
             project_id=project_id,
             path=new_fn_route.path,
             is_public=is_public).save()
@@ -178,7 +179,7 @@ class AppRouteV1Controller(controller.ServiceController):
 
         setattr(new_fn_route, "is_public", stored_route.public)
         view = app_view.AppRouteView(
-            api_url, project_id, [new_fn_route]).view_one()
+            api_url, project_id, app, [new_fn_route]).view_one()
 
         return web.json_response(data={
             "route": view,
@@ -244,8 +245,74 @@ class AppRouteV1Controller(controller.ServiceController):
         return web.json_response(data={
             "route": app_view.AppRouteView(api_url,
                                            project_id,
+                                           app,
                                            [route]).view_one(),
             "message": "App route successfully loaded"
+        }, status=200)
+
+    @requests.api_action(
+        method='PUT', route='{project_id}/apps/{app}/routes/{route}')
+    async def update(self, request, **kwargs):
+        """
+        ---
+        description: Updating project-scoped app route
+        tags:
+        - Routes
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: Successful operation. Return empty JSON
+            "401":
+                description: Not authorized.
+            "404":
+                description: App does not exist
+            "404":
+                description: App route does not exist
+        """
+        c = config.Config.config_instance()
+        log, fnclient = c.logger, c.functions_client
+        project_id = request.match_info.get('project_id')
+        app = request.match_info.get('app')
+        path = request.match_info.get('route')
+        data = await request.json()
+        log.info("Deleting route {} in app {} for project: {}"
+                 .format(path, app, project_id))
+
+        if not (await app_model.Apps.exists(app, project_id)):
+            return web.json_response(data={
+                "error": {
+                    "message": "App {0} not found".format(app),
+                }
+            }, status=404)
+        try:
+            fn_app = await fnclient.apps.show(app, loop=c.event_loop)
+            await fn_app.routes.show("/{}".format(path), loop=c.event_loop)
+            route = await fn_app.routes.update(
+                "/{}".format(path), loop=c.event_loop, **data)
+        except Exception as ex:
+            return web.json_response(data={
+                "error": {
+                    "message": getattr(ex, "reason", str(ex)),
+                }
+            }, status=getattr(ex, "status", 500))
+
+        api_url = "{}://{}".format(request.scheme, request.host)
+
+        stored_route = (await app_model.Routes.find_by(
+            app_name=app,
+            project_id=project_id,
+            path=route.path)).pop()
+
+        setattr(route, "is_public", stored_route.public)
+
+        return web.json_response(data={
+            "route": app_view.AppRouteView(api_url,
+                                           project_id,
+                                           app,
+                                           [route]).view_one(),
+
+            "message": "Route successfully updated",
         }, status=200)
 
     @requests.api_action(
