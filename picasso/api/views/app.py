@@ -57,6 +57,7 @@ class AppRouteView(object):
             if hasattr(route, "timeout"):
                 one.update(timeout=route.timeout)
             if hasattr(route, "max_concurrency"):
-                one.update(timeout=route.max_concurrency)
+                one.update(max_concurrency=
+                           route.max_concurrency)
             view.append(one)
         return view
