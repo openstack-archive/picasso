@@ -1,10 +1,10 @@
-Project Picasso as Functions-on-OpenStack
-=====================================
+Picasso as Functions-on-OpenStack
+=================================
 
 Mission
 -------
 
-Provide capabilities to run software in "serverless" way.
+Picasso provides abstractions for Functions-as-a-Service on OpenStack
 
 Serverless
 ----------
@@ -50,7 +50,7 @@ Quick-start guide
 -----------------
 
 Install DevStack with [IronFunctions enabled](https://github.com/iron-io/functions-devstack-plugin/blob/master/README.rst).
-Pull down [Project Picasso sources](https://github.com/iron-io/project-picasso).
+Pull down [Picasso sources](https://github.com/iron-io/project-picasso).
 
 Create Python3.5 virtualenv:
 
@@ -92,7 +92,7 @@ Once it is finished you will have a console script `picasso-api`:
 
     Usage: picasso-api [OPTIONS]
     
-      Starts an Project Picasso API service
+      Starts Picasso API service
     
     Options:
       --host TEXT                    API service bind host.
@@ -144,7 +144,7 @@ Examining API
 
 In [examples](examples/) folder you can find a script that examines available API endpoints, but this script relays on:
 
-* `PICASSO_API_URL` - Project Picasso API endpoint
+* `PICASSO_API_URL` - Picasso API endpoint
 * `OS_AUTH_URL` - OpenStack Auth URL
 * `OS_PROJECT_ID` - it can be found in OpenStack Dashboard or in CLI
 * `OS_USERNAME` - OpenStack project-aligned username

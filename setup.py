@@ -22,7 +22,8 @@ def read(fname):
 setuptools.setup(
     name='picasso',
     version='0.0.1',
-    description='Project Picasso as Functions-as-a-Service',
+    description=('Picasso provides abstractions for '
+                 'Functions-as-a-Service on OpenStack'),
     long_description=read('README.md'),
     url='picasso.readthedocs.org',
     author='Denis Makogon',
