@@ -12,8 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from laos.tests.common import routes as routes_suite
-from laos.tests.functional import base
+from ..common import routes as routes_suite
+from ..functional import base
 
 
 class TestIntegrationAppRoutes(base.LaosFunctionalTestsBase,
@@ -45,6 +45,13 @@ class TestIntegrationAppRoutes(base.LaosFunctionalTestsBase,
         ).create_and_delete_route()
 
     def test_double_create_route(self):
-        super(
-            TestIntegrationAppRoutes, self
-        ).double_create_route()
+        super(TestIntegrationAppRoutes, self).double_create_route()
+
+    def test_update_route(self):
+        super(TestIntegrationAppRoutes, self).update_route()
+
+    def test_private_execution(self):
+        super(TestIntegrationAppRoutes, self).execute_private()
+
+    def test_public_execution(self):
+        super(TestIntegrationAppRoutes, self).execute_private()

@@ -15,7 +15,7 @@
 import datetime
 import uuid
 
-from laos.common import config
+from . import config
 
 
 class BaseDatabaseModel(object):

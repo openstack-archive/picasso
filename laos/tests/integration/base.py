@@ -12,18 +12,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import aiohttp
 import json
 import os
+from urllib import parse
+
+import aiohttp
 import testtools
 
-from laos.common import config
-from laos.service import laos_api
+from ...common import config
+from ..common import base
+from ..common import client
 
-from laos.tests.common import base
-from laos.tests.common import client
 
-from urllib import parse
+from service import laos_api
 
 
 class LaosIntegrationTestsBase(base.LaosTestsBase, testtools.TestCase):

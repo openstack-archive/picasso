@@ -3,13 +3,13 @@
 # process, which may cause wedges in the gate later.
 
 uvloop==0.6.0 # Apache-2.0
-aioservice==0.0.1 # Apache-2.0
+aioservice==0.0.2 # Apache-2.0
 aiomysql==0.0.9 # Apache-2.0
 alembic==0.8.8 # MIT
 click==6.6 # Apache-2.0
 
 # IronFunctions
-python-functionsclient==0.0.1
+python-functionsclient==0.0.2
 
 # OpenStack
 keystoneauth1==2.15.0 # Apache-2.0

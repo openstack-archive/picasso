@@ -12,8 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from laos.tests.common import apps as apps_suite
-from laos.tests.integration import base
+from ..common import apps as apps_suite
+from ..integration import base
 
 
 class TestIntegrationApps(base.LaosIntegrationTestsBase,
@@ -36,3 +36,6 @@ class TestIntegrationApps(base.LaosIntegrationTestsBase,
 
     def test_delete_with_routes(self):
         super(TestIntegrationApps, self).delete_with_routes()
+
+    def test_update_app(self):
+        super(TestIntegrationApps, self).update_app()

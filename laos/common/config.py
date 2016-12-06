@@ -16,7 +16,7 @@
 import aiomysql
 import asyncio
 
-from laos.common import utils
+from . import utils
 
 from functionsclient.v1 import client
 

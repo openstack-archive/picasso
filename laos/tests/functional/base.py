@@ -12,24 +12,23 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import collections
 import os
 import testtools
 import uuid
 
 from aioservice.http import service
 
-from laos.api.controllers import apps
-from laos.api.controllers import routes
-from laos.api.controllers import runnable
-from laos.api.controllers import tasks
-from laos.api.middleware import content_type
+from ...api.controllers import apps
+from ...api.controllers import routes
+from ...api.controllers import runnable
+from ...api.controllers import tasks
+from ...api.middleware import content_type
 
-from laos.common import config
+from ...common import config
 
-from laos.tests.common import base
-from laos.tests.common import client
-from laos.tests.fakes import functions_api
+from ..common import base
+from ..common import client
+from ..fakes import functions_api
 
 
 class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):
@@ -78,20 +77,9 @@ class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):
         self.test_client = client.ProjectBoundLaosTestClient(
             self.testapp, self.project_id)
 
-        self.route_data = {
-            "type": "sync",
-            "path": "/hello-sync-private",
-            "image": "iron/hello",
-            "is_public": "false"
-        }
-
         self.testloop.run_until_complete(self.test_client.start_server())
         super(LaosFunctionalTestsBase, self).setUp()
 
     def tearDown(self):
-        functions_api.APPS = {}
-        functions_api.ROUTES = collections.defaultdict(list)
-        # ^ temporary solution,
-        # until https://github.com/iron-io/functions/issues/274 fixed
         self.testloop.run_until_complete(self.test_client.close())
         super(LaosFunctionalTestsBase, self).tearDown()

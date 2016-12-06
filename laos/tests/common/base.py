@@ -16,14 +16,14 @@ import asyncio
 import datetime
 import uvloop
 
-from laos.common import logger as log
+from ...common import logger as log
 
 
 class LaosTestsBase(object):
 
     def get_loop_and_logger(self, test_type):
         self.route_data = {
-            "type": "sync",
+            "type": "async",
             "path": "/hello-sync-private",
             "image": "iron/hello",
             "is_public": "false"

@@ -33,10 +33,11 @@ class AppView(object):
 
 class AppRouteView(object):
 
-    def __init__(self, api_url, project_id, fn_app_routes):
+    def __init__(self, api_url, project_id, app_name, fn_app_routes):
         self.routes = fn_app_routes
         self.api_url = api_url
         self.project_id = project_id
+        self.app_name = app_name
 
     def view_one(self):
         return self.view().pop()
@@ -47,15 +48,23 @@ class AppRouteView(object):
             if not route.is_public:
                 path = ("{}/v1/r/{}/{}{}".format(
                     self.api_url, self.project_id,
-                    route.appname, route.path))
+                    self.app_name, route.path))
             else:
                 path = ("{}/r/{}{}".format(
-                    self.api_url, route.appname, route.path))
-            view.append({
+                    self.api_url, self.app_name, route.path))
+            one = {
                 "path": path,
                 "type": route.type,
-                "memory": route.memory,
                 "image": route.image,
                 "is_public": route.is_public,
-            })
+            }
+            # temporary solution for
+            # https://github.com/iron-io/functions/issues/382
+            if hasattr(route, "memory"):
+                one.update(memory=route.memory)
+            if hasattr(route, "timeout"):
+                one.update(timeout=route.timeout)
+            if hasattr(route, "max_concurrency"):
+                one.update(timeout=route.max_concurrency)
+            view.append(one)
         return view
