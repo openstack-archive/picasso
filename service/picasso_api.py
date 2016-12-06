@@ -21,16 +21,16 @@ import uvloop
 
 from aioservice.http import service
 
-from laos.api.controllers import apps
-from laos.api.controllers import routes
-from laos.api.controllers import runnable
-from laos.api.controllers import tasks
+from picasso.api.controllers import apps
+from picasso.api.controllers import routes
+from picasso.api.controllers import runnable
+from picasso.api.controllers import tasks
 
-from laos.api.middleware import content_type
-from laos.api.middleware import keystone
+from picasso.api.middleware import content_type
+from picasso.api.middleware import keystone
 
-from laos.common import config
-from laos.common import logger as log
+from picasso.common import config
+from picasso.common import logger as log
 
 from urllib import parse
 
@@ -74,17 +74,17 @@ class API(service.HTTPService):
         )
 
 
-@click.command(name='laos-api')
+@click.command(name='picasso-api')
 @click.option('--host',
-              default=os.getenv("LAOS_HOST", '0.0.0.0'),
+              default=os.getenv("PICASSO_HOST", '0.0.0.0'),
               help='API service host.')
-@click.option('--port', default=int(os.getenv("LAOS_PORT", 10001)),
+@click.option('--port', default=int(os.getenv("PICASSO_PORT", 10001)),
               help='API service port.')
 @click.option('--db-uri',
               default=os.getenv(
-                  "LAOS_DB",
+                  "PICASSO_DB",
                   'mysql://root:root@localhost/functions'),
-              help='LaOS persistence storage URI.')
+              help='Picasso persistence storage URI.')
 @click.option('--keystone-endpoint',
               default=os.getenv("KEYSTONE_ENDPOINT",
                                 'http://localhost:5000/v3'),
@@ -94,9 +94,9 @@ class API(service.HTTPService):
                   "FUNCTIONS_URL", 'http://localhost:8080/v1'),
               help='Functions API host')
 @click.option('--log-level',
-              default=os.getenv("LAOS_LOG_LEVEL", 'INFO'),
+              default=os.getenv("PICASSO_LOG_LEVEL", 'INFO'),
               help='Logging file')
-@click.option('--log-file', default=os.getenv("LAOS_LOG_FILE"),
+@click.option('--log-file', default=os.getenv("PICASSO_LOG_FILE"),
               help='Log file path')
 @click.option('--debug', default=False, is_flag=True)
 def server(host, port, db_uri,
@@ -107,7 +107,7 @@ def server(host, port, db_uri,
            debug,
            ):
     """
-    Starts an Project Laos API service
+    Starts Picasso API service
     """
     logger = log.UnifiedLogger(
         log_to_console=True if not log_file else False,
@@ -141,9 +141,9 @@ def server(host, port, db_uri,
         logger=logger, debug=debug
     ).apply_swagger(
         swagger_url="/api",
-        description="Laos API service docs",
+        description="Picasso API service docs",
         api_version="v1.0.0",
-        title="Laos API",
+        title="Picasso API",
     ).initialize()
 
 

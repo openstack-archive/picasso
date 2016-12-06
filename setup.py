@@ -20,11 +20,11 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setuptools.setup(
-    name='laos',
+    name='picasso',
     version='0.0.1',
-    description='Project LaOS (Lambdas-on-OpenStack',
+    description='Project Picasso as Functions-as-a-Service',
     long_description=read('README.md'),
-    url='laos.readthedocs.org',
+    url='picasso.readthedocs.org',
     author='Denis Makogon',
     author_email='denis@iron.io',
     packages=setuptools.find_packages(),
@@ -68,8 +68,7 @@ setuptools.setup(
     zip_safe=True,
     entry_points={
         'console_scripts': [
-            'laos-api = laos.service.laos_api:server',
+            'picasso-api = service.picasso_api:server',
         ]
     },
-
 )

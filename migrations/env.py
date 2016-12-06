@@ -23,7 +23,7 @@ target_metadata = None
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option("sqlalchemy.url", os.getenv("LAOS_MIGRATIONS_DB"))
+config.set_main_option("sqlalchemy.url", os.getenv("PICASSO_MIGRATIONS_DB"))
 
 
 def run_migrations_offline():

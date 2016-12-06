@@ -18,12 +18,13 @@ from urllib import parse
 def split_db_uri(db_uri):
     """
     Splits DB URI into consumable parts like:
-    - username
-    - password
-    - hostname
-    - port
-    - protocol schema
-    - path
+        - username
+        - password
+        - hostname
+        - port
+        - protocol schema
+        - path
+
     :param db_uri:
     :return:
     """

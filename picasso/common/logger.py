@@ -21,7 +21,7 @@ from . import utils
 
 def common_logger_setup(
         level=logging.DEBUG,
-        filename='/tmp/laos-api.log',
+        filename='/tmp/picasso-api.log',
         log_formatter='[%(asctime)s] - '
                       '%(name)s - '
                       '%(levelname)s - '
@@ -40,7 +40,7 @@ def common_logger_setup(
 
 
 def setup_logging(name,
-                  filename='/tmp/laos-api-{}.log'.format(
+                  filename='/tmp/picasso-api-{}.log'.format(
                       datetime.datetime.now()),
                   level=logging.DEBUG,
                   log_to_console=False,
@@ -68,7 +68,7 @@ class Singleton(type):
 class UnifiedLogger(object, metaclass=utils.Singleton):
 
     def __init__(self,
-                 filename='/tmp/laos-api-{}.log'.format(
+                 filename='/tmp/picasso-api-{}.log'.format(
                      datetime.datetime.now()),
                  level=logging.DEBUG, log_to_console=False):
         self.filename = filename

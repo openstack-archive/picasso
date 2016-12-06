@@ -11,5 +11,5 @@ RUN pip3 install -r /code/requirements.txt
 RUN python3 /code/setup.py install
 
 
-ENTRYPOINT ["python3", "/code/service/laos_api.py"]
+ENTRYPOINT ["python3", "/code/service/picasso_api.py"]
 EXPOSE 10001

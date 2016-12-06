@@ -24,10 +24,10 @@ from ..common import base
 from ..common import client
 
 
-from service import laos_api
+from service import picasso_api
 
 
-class LaosIntegrationTestsBase(base.LaosTestsBase, testtools.TestCase):
+class PicassoIntegrationTestsBase(base.PicassoTestsBase, testtools.TestCase):
 
     async def authenticate(self, os_user, os_pass, os_project, url):
         auth_request_data = {
@@ -99,7 +99,7 @@ class LaosIntegrationTestsBase(base.LaosTestsBase, testtools.TestCase):
             event_loop=self.testloop,
         )
 
-        self.test_app = laos_api.API(
+        self.test_app = picasso_api.API(
             loop=self.testloop, logger=logger, debug=True)
 
         os_token, project_id = self.testloop.run_until_complete(
@@ -107,14 +107,14 @@ class LaosIntegrationTestsBase(base.LaosTestsBase, testtools.TestCase):
                 os_user, os_pass,
                 os_project, os_auth_url))
 
-        self.test_client = client.ProjectBoundLaosTestClient(
+        self.test_client = client.ProjectBoundTestClient(
             self.test_app.root, project_id, headers={
                 "X-Auth-Token": os_token
             })
         self.testloop.run_until_complete(
             self.test_client.start_server())
-        super(LaosIntegrationTestsBase, self).setUp()
+        super(PicassoIntegrationTestsBase, self).setUp()
 
     def tearDown(self):
         self.testloop.run_until_complete(self.test_client.close())
-        super(LaosIntegrationTestsBase, self).tearDown()
+        super(PicassoIntegrationTestsBase, self).tearDown()
