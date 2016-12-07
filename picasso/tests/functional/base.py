@@ -31,7 +31,7 @@ from ..common import client
 from ..fakes import functions_api
 
 
-class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):
+class FunctionalTestsBase(base.PicassoTestsBase, testtools.TestCase):
 
     def setUp(self):
         self.testloop, logger = self.get_loop_and_logger("functional")
@@ -74,12 +74,12 @@ class LaosFunctionalTestsBase(base.LaosTestsBase, testtools.TestCase):
         )
 
         self.project_id = str(uuid.uuid4()).replace("-", "")
-        self.test_client = client.ProjectBoundLaosTestClient(
+        self.test_client = client.ProjectBoundTestClient(
             self.testapp, self.project_id)
 
         self.testloop.run_until_complete(self.test_client.start_server())
-        super(LaosFunctionalTestsBase, self).setUp()
+        super(FunctionalTestsBase, self).setUp()
 
     def tearDown(self):
         self.testloop.run_until_complete(self.test_client.close())
-        super(LaosFunctionalTestsBase, self).tearDown()
+        super(FunctionalTestsBase, self).tearDown()

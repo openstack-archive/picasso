@@ -93,10 +93,10 @@ class RoutesV1(object):
             ignore_project_id=True, **data)
 
 
-class ProjectBoundLaosTestClient(test_utils.TestClient):
+class ProjectBoundTestClient(test_utils.TestClient):
 
     def __init__(self, app_or_server, project_id, **kwargs):
-        super(ProjectBoundLaosTestClient, self).__init__(app_or_server)
+        super(ProjectBoundTestClient, self).__init__(app_or_server)
         self.project_id = project_id
         self.headers = {
             "Content-Type": "application/json"

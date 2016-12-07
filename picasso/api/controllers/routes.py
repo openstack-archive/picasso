@@ -72,12 +72,10 @@ class AppRouteV1Controller(controller.ServiceController):
                 path=fn_route.path)).pop()
             setattr(fn_route, "is_public", stored_route.public)
 
-        api_url = "{}://{}".format(request.scheme, request.host)
         log.info("Listing app {} routes for project: {}."
                  .format(app, project_id))
         return web.json_response(data={
-            "routes": app_view.AppRouteView(api_url,
-                                            project_id,
+            "routes": app_view.AppRouteView(project_id,
                                             app,
                                             fn_app_routes).view(),
             "message": "Successfully loaded app routes",
@@ -175,11 +173,10 @@ class AppRouteV1Controller(controller.ServiceController):
         log.info("Creating new route in app {} "
                  "for project: {} with data {}"
                  .format(app, project_id, str(data)))
-        api_url = "{}://{}".format(request.scheme, request.host)
 
         setattr(new_fn_route, "is_public", stored_route.public)
         view = app_view.AppRouteView(
-            api_url, project_id, app, [new_fn_route]).view_one()
+            project_id, app, [new_fn_route]).view_one()
 
         return web.json_response(data={
             "route": view,
@@ -233,8 +230,6 @@ class AppRouteV1Controller(controller.ServiceController):
         log.info("Requesting route {} in app {} for project: {}"
                  .format(path, app, project_id))
 
-        api_url = "{}://{}".format(request.scheme, request.host)
-
         stored_route = (await app_model.Routes.find_by(
             app_name=app,
             project_id=project_id,
@@ -243,8 +238,7 @@ class AppRouteV1Controller(controller.ServiceController):
         setattr(route, "is_public", stored_route.public)
 
         return web.json_response(data={
-            "route": app_view.AppRouteView(api_url,
-                                           project_id,
+            "route": app_view.AppRouteView(project_id,
                                            app,
                                            [route]).view_one(),
             "message": "App route successfully loaded"
@@ -297,8 +291,6 @@ class AppRouteV1Controller(controller.ServiceController):
                 }
             }, status=getattr(ex, "status", 500))
 
-        api_url = "{}://{}".format(request.scheme, request.host)
-
         stored_route = (await app_model.Routes.find_by(
             app_name=app,
             project_id=project_id,
@@ -307,8 +299,7 @@ class AppRouteV1Controller(controller.ServiceController):
         setattr(route, "is_public", stored_route.public)
 
         return web.json_response(data={
-            "route": app_view.AppRouteView(api_url,
-                                           project_id,
+            "route": app_view.AppRouteView(project_id,
                                            app,
                                            [route]).view_one(),
 

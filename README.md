@@ -1,10 +1,10 @@
-Project LaOS aka Lambdas-on-OpenStack
-=====================================
+Picasso: Functions-as-a-Service (FaaS) on OpenStack
+===================================================
 
 Mission
 -------
 
-Provide capabilities to run software in "serverless" way.
+Picasso provides an API abstraction layer for Functions-as-a-Service (FaaS) on OpenStack.
 
 Serverless
 ----------
@@ -50,7 +50,7 @@ Quick-start guide
 -----------------
 
 Install DevStack with [IronFunctions enabled](https://github.com/iron-io/functions-devstack-plugin/blob/master/README.rst).
-Pull down [Project LaOS sources](https://github.com/iron-io/project-laos).
+Pull down [Picasso sources](https://github.com/iron-io/project-picasso).
 
 Create Python3.5 virtualenv:
 
@@ -61,7 +61,7 @@ Install dependencies:
 
     $ pip install -r requirements.txt -r test-requirements.txt
 
-Install LaOS itself:
+Install Picasso itself:
 
     $ pip install -e .
 
@@ -76,7 +76,7 @@ Migrations
 Once all dependencies are installed it is necessary to run database migrations.
 Before that it is necessary to set env variable:
 
-    export LAOS_MIGRATIONS_DB=mysql+pymysql://root:root@localhost/functions
+    export PICASSO_MIGRATIONS_DB=mysql+pymysql://root:root@localhost/functions
 
 In this section please specify connection URI to your own MySQL database.
 Once the file is saved, just use alembic to apply the migrations:
@@ -86,35 +86,35 @@ Once the file is saved, just use alembic to apply the migrations:
 Starting a server
 -----------------
 
-Once it is finished you will have a console script `laos-api`:
+Once it is finished you will have a console script `picasso-api`:
 
-    $ laos-api --help
+    $ picasso-api --help
 
-    Usage: laos-api [OPTIONS]
+    Usage: picasso-api [OPTIONS]
     
-      Starts an Project Laos API service
+      Starts Picasso API service
     
     Options:
       --host TEXT                    API service bind host.
       --port INTEGER                 API service bind port.
-      --db-uri TEXT                  LaOS persistence storage URI.
+      --db-uri TEXT                  Picasso persistence storage URI.
       --keystone-endpoint TEXT       OpenStack Identity service endpoint.
       --functions-url TEXT           IronFunctions API URL
       --log-level TEXT               Logging file
       --log-file TEXT                Log file path
       --help                         Show this message and exit.
 
-Minimum required options to start LaOS API service:
+Minimum required options to start Picasso API service:
 
      --db-uri mysql://root:root@192.168.0.112/functions
      --keystone-endpoint http://192.168.0.112:5000/v3
      --functions-url http://192.168.0.112:8080/v1
      --log-level INFO
 
-Creating and running LaOS inside Docker container
+Creating and running Picasso inside Docker container
 -------------------------------------------------
 
-As part of regular Python distribution, LaOS also has its own Docker container to run.
+As part of regular Python distribution, Picasso also has its own Docker container to run.
 There are two options:
 
 * run from sources
@@ -123,13 +123,13 @@ There are two options:
 In order to build container from sources run following commands:
 
     export DOCKER_HOST=tcp://<docker-host>:<docker-port>
-    docker build -t laos-api -f Dockerfile .
+    docker build -t picasso-api -f Dockerfile .
 
 After that it is required to create correct version of [Dockerfile.env](Dockerfile.env.example). 
-It container all required options to start LaOS API service properly.
+It container all required options to start Picasso API service properly.
 Once it is done run following commands:
 
-    docker run -d -p 10001:10001 --env-file Dockerfile.env laos-api
+    docker run -d -p 10001:10001 --env-file Dockerfile.env picasso-api
 
 Navigate to your web browser to check if service is running:
 
@@ -144,7 +144,7 @@ Examining API
 
 In [examples](examples/) folder you can find a script that examines available API endpoints, but this script relays on:
 
-* `LAOS_API_URL` - Project LaOS API endpoint
+* `PICASSO_API_URL` - Picasso API endpoint
 * `OS_AUTH_URL` - OpenStack Auth URL
 * `OS_PROJECT_ID` - it can be found in OpenStack Dashboard or in CLI
 * `OS_USERNAME` - OpenStack project-aligned username
@@ -161,10 +161,10 @@ Please note, that given values are project-specific, so they can't be reused.
 API docs
 --------
 
-As part of LaOS ReST API it is possible to discover API doc using Swagger Doc.
+As part of Picasso ReST API it is possible to discover API doc using Swagger Doc.
 Once server is launched you can navigate to:
 
-    http://<laos-host>:<laos-port>/api
+    http://<picasso-host>:<picasso-port>/api
 
 to see recent API docs
 

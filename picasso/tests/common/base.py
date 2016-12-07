@@ -19,7 +19,7 @@ import uvloop
 from ...common import logger as log
 
 
-class LaosTestsBase(object):
+class PicassoTestsBase(object):
 
     def get_loop_and_logger(self, test_type):
         self.route_data = {
@@ -36,7 +36,7 @@ class LaosTestsBase(object):
 
         logger = log.UnifiedLogger(
             log_to_console=False,
-            filename=("/tmp/laos-{}-tests-run-{}.log"
+            filename=("/tmp/picasso-{}-tests-run-{}.log"
                       .format(test_type, datetime.datetime.now())),
             level="DEBUG").setup_logger(__package__)
         return testloop, logger

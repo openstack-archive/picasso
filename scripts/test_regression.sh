@@ -4,7 +4,7 @@ set +x
 set +e
 
 function get_current_coverage {
-    local prev_stat_raw=`pytest --tb=long --capture=sys --cov=laos --capture=fd laos/tests/${1:-functional} | grep TOTAL | awk '{print $4}'`
+    local prev_stat_raw=`pytest --tb=long --capture=sys --cov=picasso --capture=fd picasso/tests/${1:-functional} | grep TOTAL | awk '{print $4}'`
     echo ${prev_stat_raw:0:2}
 }
 

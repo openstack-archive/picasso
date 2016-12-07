@@ -16,7 +16,7 @@ from ..common import routes as routes_suite
 from ..functional import base
 
 
-class TestIntegrationAppRoutes(base.LaosFunctionalTestsBase,
+class TestIntegrationAppRoutes(base.FunctionalTestsBase,
                                routes_suite.AppRoutesTestSuite):
 
     def test_list_routes_from_unknown_app(self):

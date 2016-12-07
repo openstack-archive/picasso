@@ -13,29 +13,28 @@
 #    under the License.
 
 from ..common import apps as apps_suite
-from ..integration import base
+from ..functional import base
 
 
-class TestIntegrationApps(base.LaosIntegrationTestsBase,
-                          apps_suite.AppsTestSuite):
+class TestApps(base.FunctionalTestsBase, apps_suite.AppsTestSuite):
 
     def test_list_apps(self):
-        super(TestIntegrationApps, self).list_apps()
+        super(TestApps, self).list_apps()
 
     def test_get_unknown(self):
-        super(TestIntegrationApps, self).get_unknown()
+        super(TestApps, self).get_unknown()
 
     def test_create_and_delete(self):
-        super(TestIntegrationApps, self).create_and_delete()
+        super(TestApps, self).create_and_delete()
 
     def test_attempt_to_double_create(self):
-        super(TestIntegrationApps, self).attempt_to_double_create()
+        super(TestApps, self).attempt_to_double_create()
 
     def test_attempt_delete_unknonw(self):
-        super(TestIntegrationApps, self).attempt_delete_unknonw()
+        super(TestApps, self).attempt_delete_unknonw()
 
     def test_delete_with_routes(self):
-        super(TestIntegrationApps, self).delete_with_routes()
+        super(TestApps, self).delete_with_routes()
 
     def test_update_app(self):
-        super(TestIntegrationApps, self).update_app()
+        super(TestApps, self).update_app()

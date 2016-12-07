@@ -33,9 +33,8 @@ class AppView(object):
 
 class AppRouteView(object):
 
-    def __init__(self, api_url, project_id, app_name, fn_app_routes):
+    def __init__(self, project_id, app_name, fn_app_routes):
         self.routes = fn_app_routes
-        self.api_url = api_url
         self.project_id = project_id
         self.app_name = app_name
 
@@ -45,15 +44,8 @@ class AppRouteView(object):
     def view(self):
         view = []
         for route in self.routes:
-            if not route.is_public:
-                path = ("{}/v1/r/{}/{}{}".format(
-                    self.api_url, self.project_id,
-                    self.app_name, route.path))
-            else:
-                path = ("{}/r/{}{}".format(
-                    self.api_url, self.app_name, route.path))
             one = {
-                "path": path,
+                "path": route.path,
                 "type": route.type,
                 "image": route.image,
                 "is_public": route.is_public,
@@ -65,6 +57,7 @@ class AppRouteView(object):
             if hasattr(route, "timeout"):
                 one.update(timeout=route.timeout)
             if hasattr(route, "max_concurrency"):
-                one.update(timeout=route.max_concurrency)
+                one.update(max_concurrency=
+                           route.max_concurrency)
             view.append(one)
         return view
