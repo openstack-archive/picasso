@@ -1,10 +1,10 @@
-Picasso as Functions-on-OpenStack
-=================================
+Picasso: Functions-as-a-Service (FaaS) on OpenStack
+===================================================
 
 Mission
 -------
 
-Picasso provides abstractions for Functions-as-a-Service on OpenStack
+Picasso provides an API abstraction layer for Functions-as-a-Service (FaaS) on OpenStack.
 
 Serverless
 ----------
