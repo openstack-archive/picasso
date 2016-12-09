@@ -17,14 +17,19 @@ import json as jsonlib
 
 
 @contextlib.contextmanager
-def setup_execute(self, app_name):
+def setup_execute(self, app_name, create_public_route=False):
     app, _ = self.testloop.run_until_complete(
         self.test_client.apps.create(app_name)
     )
     new_app_name = app["app"]["name"]
+    route_data = self.route_data
+
+    if create_public_route:
+        route_data.update(is_public="true")
+
     route, _ = self.testloop.run_until_complete(
         self.test_client.routes.create(
-            new_app_name, **self.route_data)
+            new_app_name, **route_data)
     )
     self.testloop.run_until_complete(
         self.test_client.routes.update(
@@ -199,7 +204,8 @@ class AppRoutesTestSuite(object):
             self.assertEqual(200, status)
 
     def execute_public(self):
-        with setup_execute(self, "execute_public") as app_name:
+        with setup_execute(self, "execute_public",
+                           create_public_route=True) as app_name:
             result, status = self.testloop.run_until_complete(
                 self.test_client.routes.execute_public(
                     app_name, self.route_data["path"]
@@ -207,3 +213,23 @@ class AppRoutesTestSuite(object):
             )
             self.assertIsNotNone(result)
             self.assertEqual(200, status)
+
+    def fail_to_execute_private_as_public(self):
+        with setup_execute(self, "fail_to_execute_"
+                                 "private_as_public") as app_name:
+            _, status = self.testloop.run_until_complete(
+                self.test_client.routes.execute_public(
+                    app_name, self.route_data["path"]
+                )
+            )
+            self.assertEqual(403, status)
+
+    def fail_to_run_app_from_other_project(self):
+        with setup_execute(self, "fail_to_run_app_"
+                                 "from_other_project") as app_name:
+            _, status = self.testloop.run_until_complete(
+                self.other_test_client.routes.execute_public(
+                    app_name, self.route_data["path"]
+                )
+            )
+            self.assertEqual(404, status)

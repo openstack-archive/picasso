@@ -74,12 +74,17 @@ class FunctionalTestsBase(base.PicassoTestsBase, testtools.TestCase):
         )
 
         self.project_id = str(uuid.uuid4()).replace("-", "")
+        self.other_project_id = str(uuid.uuid4()).replace("-", "")
+
         self.test_client = client.ProjectBoundTestClient(
             self.testapp, self.project_id)
+        self.other_test_client = client.ProjectBoundTestClient(
+            self.testapp, self.other_project_id)
 
         self.testloop.run_until_complete(self.test_client.start_server())
         super(FunctionalTestsBase, self).setUp()
 
     def tearDown(self):
         self.testloop.run_until_complete(self.test_client.close())
+        self.testloop.run_until_complete(self.other_test_client.close())
         super(FunctionalTestsBase, self).tearDown()
