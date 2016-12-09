@@ -139,9 +139,19 @@ class RunnableV1Controller(controller.ServiceController,
             "200":
                 description: successful operation. Return "runnable" JSON
             "404":
-                description: App does not exist
+                description: App not found
             "404":
-                description: App route does not exist
+                description: App route not found
         """
+        app = request.match_info.get('app')
+        project_id = request.match_info.get('project_id')
+
+        if not (await app_model.Apps.exists(app, project_id)):
+            return web.json_response(data={
+                "error": {
+                    "message": "App {0} not found".format(app),
+                }
+            }, status=404)
+
         return await super(RunnableV1Controller,
                            self).run(request, **kwargs)

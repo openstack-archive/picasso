@@ -52,3 +52,7 @@ class TestAppRoutes(base.FunctionalTestsBase,
 
     def test_fail_to_execute_private_route(self):
         super(TestAppRoutes, self).fail_to_execute_private_as_public()
+
+    def test_fail_to_run_app_from_other_project(self):
+        super(TestAppRoutes,
+              self).fail_to_run_app_from_other_project()

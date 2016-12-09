@@ -223,3 +223,13 @@ class AppRoutesTestSuite(object):
                 )
             )
             self.assertEqual(403, status)
+
+    def fail_to_run_app_from_other_project(self):
+        with setup_execute(self, "fail_to_run_app_"
+                                 "from_other_project") as app_name:
+            _, status = self.testloop.run_until_complete(
+                self.other_test_client.routes.execute_public(
+                    app_name, self.route_data["path"]
+                )
+            )
+            self.assertEqual(404, status)
