@@ -18,6 +18,7 @@ from aioservice.http import controller
 from aioservice.http import requests
 
 from ...common import config
+from ...models import app as app_model
 
 
 class RunnableMixin(object):
@@ -88,9 +89,29 @@ class PublicRunnableV1Controller(controller.ServiceController,
                 description: successful operation. Return "runnable" JSON
             "404":
                 description: App does not exist
-            "404":
-                description: App route does not exist
+            "403":
+                description: Unable to execute private route
         """
+        app = request.match_info.get('app')
+        path = request.match_info.get('route')
+        routes = await app_model.Routes.find_by(app_name=app, path=path)
+
+        if not routes:
+            return web.json_response(data={
+                "error": {
+                    "message": "Route {0} not found".format(app),
+                }
+            }, status=404)
+        route = routes.pop()
+
+        if not route.public:
+            return web.json_response(data={
+                "error": {
+                    "message": "Unable to execute private "
+                               "route {0}".format(path)
+                }
+            }, status=403)
+
         return await super(PublicRunnableV1Controller,
                            self).run(request, **kwargs)
 

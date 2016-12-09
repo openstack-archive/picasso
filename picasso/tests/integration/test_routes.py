@@ -55,3 +55,7 @@ class TestIntegrationAppRoutes(base.FunctionalTestsBase,
 
     def test_public_execution(self):
         super(TestIntegrationAppRoutes, self).execute_private()
+
+    def test_fail_to_execute_private_route(self):
+        super(TestIntegrationAppRoutes,
+              self).fail_to_execute_private_as_public()
