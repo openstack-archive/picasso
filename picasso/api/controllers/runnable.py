@@ -93,13 +93,14 @@ class PublicRunnableV1Controller(controller.ServiceController,
                 description: Unable to execute private route
         """
         app = request.match_info.get('app')
-        path = request.match_info.get('route')
-        routes = await app_model.Routes.find_by(app_name=app, path=path)
+        path = "/{}".format(request.match_info.get('route'))
+        routes = await app_model.Routes.find_by(
+            app_name=app, path=path)
 
         if not routes:
             return web.json_response(data={
                 "error": {
-                    "message": "Route {0} not found".format(app),
+                    "message": "Route {0} not found".format(path),
                 }
             }, status=404)
         route = routes.pop()
