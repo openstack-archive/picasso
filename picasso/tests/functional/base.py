@@ -21,7 +21,6 @@ from aioservice.http import service
 from ...api.controllers import apps
 from ...api.controllers import routes
 from ...api.controllers import runnable
-from ...api.controllers import tasks
 from ...api.middleware import content_type
 
 from ...common import config
@@ -40,7 +39,6 @@ class FunctionalTestsBase(base.PicassoTestsBase, testtools.TestCase):
             [
                 apps.AppV1Controller,
                 routes.AppRouteV1Controller,
-                tasks.TasksV1Controller,
                 runnable.RunnableV1Controller,
             ], middleware=[
                 content_type.content_type_validator

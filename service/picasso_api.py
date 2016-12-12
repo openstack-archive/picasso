@@ -24,7 +24,6 @@ from aioservice.http import service
 from picasso.api.controllers import apps
 from picasso.api.controllers import routes
 from picasso.api.controllers import runnable
-from picasso.api.controllers import tasks
 
 from picasso.api.middleware import content_type
 from picasso.api.middleware import keystone
@@ -48,7 +47,6 @@ class API(service.HTTPService):
                 apps.AppV1Controller,
                 routes.AppRouteV1Controller,
                 runnable.RunnableV1Controller,
-                tasks.TasksV1Controller
             ], middleware=[
                 keystone.auth_through_token,
                 content_type.content_type_validator

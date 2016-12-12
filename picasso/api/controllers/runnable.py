@@ -51,11 +51,7 @@ class RunnableMixin(object):
 
         def process_result(res):
             if route.type == "async":
-                _data = {
-                    "task_id": res["call_id"],
-                    "message": ("App {} async route {} "
-                                "execution started".format(app, path))
-                }
+                _data = {}
             else:
                 _data = {
                     "result": res,
