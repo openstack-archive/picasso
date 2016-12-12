@@ -41,21 +41,23 @@ class AppRouteV1Controller(controller.ServiceController):
         - application/json
         responses:
             "200":
-                description: Successful operation. Return "routes" JSON
+                description: Successful operation
             "401":
-                description: Not authorized.
+                description: Not authorized
             "404":
-                description: App does not exist
+                description: App not found
         """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
         app = request.match_info.get('app')
 
-        log.info("Listing app {} routes for project: {}."
+        log.info("[{}] - Listing app '{}' routes"
                  .format(app, project_id))
 
         if not (await app_model.Apps.exists(app, project_id)):
+            log.info("[{}] - App not found, "
+                     "aborting".format(project_id))
             return web.json_response(data={
                 "error": {
                     "message": "App {0} not found".format(app),
@@ -64,16 +66,16 @@ class AppRouteV1Controller(controller.ServiceController):
 
         fn_app_routes = (await (await fnclient.apps.show(
             app, loop=c.event_loop)).routes.list(loop=c.event_loop))
-
+        log.debug("[{}] - Fn routes found".format(project_id))
         for fn_route in fn_app_routes:
             stored_route = (await app_model.Routes.find_by(
                 app_name=app,
                 project_id=project_id,
                 path=fn_route.path)).pop()
+            log.debug("[{}] - App route '{}' model "
+                      "found".format(project_id, fn_route.path))
             setattr(fn_route, "is_public", stored_route.public)
 
-        log.info("Listing app {} routes for project: {}."
-                 .format(app, project_id))
         return web.json_response(data={
             "routes": app_view.AppRouteView(project_id,
                                             app,
@@ -109,11 +111,11 @@ class AppRouteV1Controller(controller.ServiceController):
                 type: boolean
         responses:
             "200":
-                description: Successful operation. Return "route" JSON
+                description: Successful operation
             "401":
-                description: Not authorized.
+                description: Not authorized
             "404":
-                description: App does not exist
+                description: App not found
             "409":
                 description: App route exists
         """
@@ -123,6 +125,8 @@ class AppRouteV1Controller(controller.ServiceController):
         app = request.match_info.get('app')
 
         if not (await app_model.Apps.exists(app, project_id)):
+            log.info("[{}] - App not found, "
+                     "aborting".format(project_id))
             return web.json_response(data={
                 "error": {
                     "message": "App {0} not found".format(app),
@@ -137,6 +141,8 @@ class AppRouteV1Controller(controller.ServiceController):
         try:
             fn_app = await fnclient.apps.show(app, loop=c.event_loop)
         except Exception as ex:
+            log.info("[{}] - App not found, "
+                     "aborting".format(project_id))
             return web.json_response(data={
                 "error": {
                     "message": getattr(ex, "reason", str(ex)),
@@ -145,6 +151,9 @@ class AppRouteV1Controller(controller.ServiceController):
 
         try:
             await fn_app.routes.show(path, loop=c.event_loop)
+            log.info("[{}] - Unable to create route. "
+                     "App route '{}' already "
+                     "exists, aborting".format(project_id, path))
             return web.json_response(data={
                 "error": {
                     "message": (
@@ -154,6 +163,8 @@ class AppRouteV1Controller(controller.ServiceController):
                 }
             }, status=409)
         except Exception as ex:
+            log.error("[{}] - Unable to create route. "
+                      "Reason:\n{}".format(project_id, str(ex)))
             if getattr(ex, "status", 500) != 404:
                 return web.json_response(data={
                     "error": {
@@ -161,27 +172,34 @@ class AppRouteV1Controller(controller.ServiceController):
                     }
                 }, status=getattr(ex, "status", 500))
 
-        new_fn_route = (await fn_app.routes.create(
-            **data, loop=c.event_loop))
+        try:
+            new_fn_route = (await fn_app.routes.create(
+                **data, loop=c.event_loop))
+            log.debug("[{}] - Fn app created with data "
+                      "'{}'".format(project_id, str(data)))
+            stored_route = await app_model.Routes(
+                app_name=app,
+                project_id=project_id,
+                path=new_fn_route.path,
+                is_public=is_public).save()
 
-        stored_route = await app_model.Routes(
-            app_name=app,
-            project_id=project_id,
-            path=new_fn_route.path,
-            is_public=is_public).save()
-
-        log.info("Creating new route in app {} "
-                 "for project: {} with data {}"
-                 .format(app, project_id, str(data)))
-
-        setattr(new_fn_route, "is_public", stored_route.public)
-        view = app_view.AppRouteView(
-            project_id, app, [new_fn_route]).view_one()
-
-        return web.json_response(data={
-            "route": view,
-            "message": "App route successfully created"
-        }, status=200)
+            setattr(new_fn_route, "is_public", stored_route.public)
+            view = app_view.AppRouteView(
+                project_id, app, [new_fn_route]).view_one()
+            log.info("[{}] - App created with data "
+                     "'{}'".format(project_id, str(view)))
+            return web.json_response(data={
+                "route": view,
+                "message": "App route successfully created"
+            }, status=200)
+        except Exception as ex:
+            log.error("[{}] - Reason:\n{}".format(project_id, str(ex)))
+            if getattr(ex, "status", 500) != 404:
+                return web.json_response(data={
+                    "error": {
+                        "message": getattr(ex, "reason", str(ex)),
+                    }
+                }, status=getattr(ex, "status", 500))
 
     @requests.api_action(
         method='GET', route='{project_id}/apps/{app}/routes/{route}')
@@ -195,13 +213,13 @@ class AppRouteV1Controller(controller.ServiceController):
         - application/json
         responses:
             "200":
-                description: Successful operation. Return "route" JSON
+                description: Successful operation
             "401":
-                description: Not authorized.
+                description: Not authorized
             "404":
-                description: App does not exist
+                description: App not found
             "404":
-                description: App route does not exist
+                description: App route not found
         """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
@@ -210,6 +228,8 @@ class AppRouteV1Controller(controller.ServiceController):
         path = request.match_info.get('route')
 
         if not (await app_model.Apps.exists(app, project_id)):
+            log.info("[{}] - App not found, "
+                     "aborting".format(project_id))
             return web.json_response(data={
                 "error": {
                     "message": "App {0} not found".format(app),
@@ -221,14 +241,16 @@ class AppRouteV1Controller(controller.ServiceController):
             route = await fn_app.routes.show(
                 "/{}".format(path), loop=c.event_loop)
         except Exception as ex:
+            log.error("[{}] - Exception while attempting get route info. "
+                      "Reason:\n{}".format(project_id, str(ex)))
             return web.json_response(data={
                 "error": {
                     "message": getattr(ex, "reason", str(ex)),
                 }
             }, status=getattr(ex, "status", 500))
 
-        log.info("Requesting route {} in app {} for project: {}"
-                 .format(path, app, project_id))
+        log.info("[{}] - Requesting route '{}' in app '{}'"
+                 .format(project_id, path, app, ))
 
         stored_route = (await app_model.Routes.find_by(
             app_name=app,
@@ -237,10 +259,14 @@ class AppRouteV1Controller(controller.ServiceController):
 
         setattr(route, "is_public", stored_route.public)
 
+        view = app_view.AppRouteView(
+            project_id, app, [route]).view_one()
+
+        log.info("[{}] - Route found with data "
+                 "'{}'".format(project_id, view))
+
         return web.json_response(data={
-            "route": app_view.AppRouteView(project_id,
-                                           app,
-                                           [route]).view_one(),
+            "route": view,
             "message": "App route successfully loaded"
         }, status=200)
 
@@ -256,9 +282,9 @@ class AppRouteV1Controller(controller.ServiceController):
         - application/json
         responses:
             "200":
-                description: Successful operation. Return empty JSON
+                description: Successful operation
             "401":
-                description: Not authorized.
+                description: Not authorized
             "404":
                 description: App does not exist
             "404":
@@ -274,6 +300,8 @@ class AppRouteV1Controller(controller.ServiceController):
                  .format(path, app, project_id))
 
         if not (await app_model.Apps.exists(app, project_id)):
+            log.info("[{}] - App not found, "
+                     "aborting".format(project_id))
             return web.json_response(data={
                 "error": {
                     "message": "App {0} not found".format(app),
@@ -285,6 +313,8 @@ class AppRouteV1Controller(controller.ServiceController):
             route = await fn_app.routes.update(
                 "/{}".format(path), loop=c.event_loop, **data)
         except Exception as ex:
+            log.error("[{}] - Unable to update app. "
+                      "Reason:\n{}".format(project_id, str(ex)))
             return web.json_response(data={
                 "error": {
                     "message": getattr(ex, "reason", str(ex)),
@@ -298,11 +328,12 @@ class AppRouteV1Controller(controller.ServiceController):
 
         setattr(route, "is_public", stored_route.public)
 
+        view = app_view.AppRouteView(
+            project_id, app, [route]).view_one()
+        log.info("[{}] - App route update. "
+                 "Route data: {}".format(project_id, view))
         return web.json_response(data={
-            "route": app_view.AppRouteView(project_id,
-                                           app,
-                                           [route]).view_one(),
-
+            "route": view,
             "message": "Route successfully updated",
         }, status=200)
 
@@ -318,23 +349,25 @@ class AppRouteV1Controller(controller.ServiceController):
         - application/json
         responses:
             "200":
-                description: Successful operation. Return empty JSON
+                description: Successful operation
             "401":
-                description: Not authorized.
+                description: Not authorized
             "404":
-                description: App does not exist
+                description: App not found
             "404":
-                description: App route does not exist
+                description: App route not found
         """
         c = config.Config.config_instance()
         log, fnclient = c.logger, c.functions_client
         project_id = request.match_info.get('project_id')
         app = request.match_info.get('app')
-        path = request.match_info.get('route')
-        log.info("Deleting route {} in app {} for project: {}"
-                 .format(path, app, project_id))
+        path = "/{}".format(request.match_info.get('route'))
+        log.info("[{}] - Deleting app '{}' route '{}'"
+                 .format(project_id, app, path))
 
         if not (await app_model.Apps.exists(app, project_id)):
+            log.info("[{}] - App not found, "
+                     "aborting".format(project_id))
             return web.json_response(data={
                 "error": {
                     "message": "App {0} not found".format(app),
@@ -343,10 +376,12 @@ class AppRouteV1Controller(controller.ServiceController):
 
         try:
             fn_app = await fnclient.apps.show(app, loop=c.event_loop)
-            await fn_app.routes.show("/{}".format(path), loop=c.event_loop)
-            await fn_app.routes.delete("/{}".format(path), loop=c.event_loop)
+            await fn_app.routes.show(path, loop=c.event_loop)
+            await fn_app.routes.delete(path, loop=c.event_loop)
             await app_model.Routes.delete(project_id=project_id, app_name=app)
         except Exception as ex:
+            log.error("[{}] - Unable to delete app route '{}'. "
+                      "Reason:\n{}".format(project_id, path, str(ex)))
             return web.json_response(data={
                 "error": {
                     "message": getattr(ex, "reason", str(ex)),

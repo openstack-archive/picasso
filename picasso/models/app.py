@@ -27,6 +27,15 @@ class Apps(persistence.BaseDatabaseModel):
         "name"
     )
 
+    def __str__(self):
+        return ("<App name={name} ID={id} "
+                "description={description} "
+                "project_id={project_id}>".format(
+                    name=self.name,
+                    description=self.description,
+                    id=self.id,
+                    project_id=self.project_id))
+
 
 class Routes(persistence.BaseDatabaseModel):
 
@@ -43,3 +52,9 @@ class Routes(persistence.BaseDatabaseModel):
     @property
     def public(self):
         return True if self.is_public else False
+
+    def __str__(self):
+        return ("<App route path={path} project_id={project_id} "
+                "app={app_name} is_public={is_public} >".format(
+                    path=self.path, project_id=self.project_id,
+                    app_name=self.app_name, is_public=self.public))

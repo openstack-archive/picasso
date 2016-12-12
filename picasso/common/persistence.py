@@ -28,9 +28,9 @@ class BaseDatabaseModel(object):
 
     def __init__(self, **kwargs):
         logger = config.Config.config_instance().logger
-        logger.info("Attempting to create object class instance "
-                    "'{}' with attributes '{}'"
-                    .format(str(self.__class__), str(kwargs)))
+        logger.debug("Attempting to create object class instance "
+                     "'{}' with attributes '{}'"
+                     .format(str(self.__class__), str(kwargs)))
         self.id = uuid.uuid4().hex
         self.created_at = str(datetime.datetime.now())
         self.updated_at = str(datetime.datetime.now())
@@ -44,13 +44,13 @@ class BaseDatabaseModel(object):
             self.table_name,
             str(tuple([getattr(self, clmn) for clmn in self.columns]))
         )
-        logger.info("Attempting to save object '{}' "
-                    "using SQL query: {}".format(self.table_name, insert))
+        logger.debug("Attempting to save object '{}' "
+                     "using SQL query: {}".format(self.table_name, insert))
         async with pool.acquire() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(insert)
                 await conn.commit()
-        logger.info("Object saved.")
+        logger.debug("Object saved.")
         return self
 
     @classmethod
@@ -59,13 +59,13 @@ class BaseDatabaseModel(object):
         logger, pool = c.logger, c.connection.pool
         delete = cls.DELETE.format(
             cls.table_name, cls.__define_where(**kwargs))
-        logger.info("Attempting to delete object '{}' "
-                    "using SQL query: {}".format(cls.table_name, delete))
+        logger.debug("Attempting to delete object '{}' "
+                     "using SQL query: {}".format(cls.table_name, delete))
         async with pool.acquire() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(delete)
                 await conn.commit()
-        logger.info("Object gone.")
+        logger.debug("Object gone.")
 
     # async def update(self, **kwargs):
     #     async with config.Connection.from_class().acquire() as conn:
@@ -99,8 +99,8 @@ class BaseDatabaseModel(object):
         where = cls.__define_where(**kwargs)
         select = cls.SELECT.format(
             cls.table_name, where)
-        logger.info("Attempting to find object(s) '{}' "
-                    "using SQL : {}".format(cls.table_name, select))
+        logger.debug("Attempting to find object(s) '{}' "
+                     "using SQL : {}".format(cls.table_name, select))
         async with pool.acquire() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(select)
