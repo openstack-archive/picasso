@@ -36,7 +36,7 @@ class PicassoTestsBase(object):
 
         logger = log.UnifiedLogger(
             log_to_console=False,
-            filename=("/tmp/picasso-{}-tests-run-{}.log"
+            filename=("./picasso-{}-tests-run-{}.log"
                       .format(test_type, datetime.datetime.now())),
             level="DEBUG").setup_logger(__package__)
         return testloop, logger

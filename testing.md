@@ -105,3 +105,8 @@ So, as part of `Tox` testing new check was added - functional test coverage regr
 In order to run it use following command:
 
     $ tox -e py35-functional-regression
+
+Static code analysis with Bandit
+================================
+
+    $ tox -e bandit
