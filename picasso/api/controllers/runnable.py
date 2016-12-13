@@ -25,7 +25,7 @@ class RunnableMixin(object):
 
     async def run(self, request, **kwargs):
         c = config.Config.config_instance()
-        fnclient = c.functions_client
+        log, fnclient = c.logger, c.functions_client
         app = request.match_info.get('app')
         path = "/{}".format(request.match_info.get('route'))
 
@@ -43,6 +43,8 @@ class RunnableMixin(object):
             result = await fn_app.routes.execute(
                 path, loop=c.event_loop, **data)
         except Exception as ex:
+            log.error("Unable to execute route. "
+                      "Reason:\n{}".format(str(ex)))
             return web.json_response(data={
                 "error": {
                     "message": getattr(ex, "reason", str(ex)),
@@ -82,12 +84,13 @@ class PublicRunnableV1Controller(controller.ServiceController,
         - application/json
         responses:
             "200":
-                description: successful operation. Return "runnable" JSON
+                description: Successful operation
             "404":
-                description: App does not exist
+                description: App not found
             "403":
                 description: Unable to execute private route
         """
+        log = config.Config.config_instance().logger
         app = request.match_info.get('app')
         path = "/{}".format(request.match_info.get('route'))
         routes = await app_model.Routes.find_by(
@@ -102,6 +105,7 @@ class PublicRunnableV1Controller(controller.ServiceController,
         route = routes.pop()
 
         if not route.public:
+            log.info("Unable to execute private route '{}'".format(path))
             return web.json_response(data={
                 "error": {
                     "message": "Unable to execute private "
@@ -132,18 +136,21 @@ class RunnableV1Controller(controller.ServiceController,
         - application/json
         responses:
             "401":
-                description: Not authorized.
+                description: Not authorized
             "200":
-                description: successful operation. Return "runnable" JSON
+                description: Successful operation
             "404":
                 description: App not found
             "404":
                 description: App route not found
         """
+        log = config.Config.config_instance().logger
         app = request.match_info.get('app')
         project_id = request.match_info.get('project_id')
 
         if not (await app_model.Apps.exists(app, project_id)):
+            log.info("[{}] - App not found, "
+                     "aborting".format(project_id))
             return web.json_response(data={
                 "error": {
                     "message": "App {0} not found".format(app),
