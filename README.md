@@ -154,6 +154,4 @@ API docs are discoverable via Swagger. Just launch the Picasso API and browse to
 
 ### Support
 
-You can get community support via:
-
-    * [Slack](https://open-iron.herokuapp.com/)
+Join us on [Slack](https://open-iron.herokuapp.com/)!
