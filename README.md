@@ -1,20 +1,15 @@
-Picasso: Functions-as-a-Service (FaaS) on OpenStack
-===================================================
+# Picasso: Functions-as-a-Service (FaaS) on OpenStack
 
-Mission
--------
+## Mission
 
-Picasso provides an API abstraction layer for Functions-as-a-Service (FaaS) on OpenStack.
+Picasso aims to provide an API abstraction layer for Functions-as-a-Service (FaaS) on OpenStack.
 
-Serverless
-----------
+## What is Serverless/FaaS?
 
-Serverless is a new paradigm in computing that enables simplicity, 
-efficiency and scalability for both developers and operators. 
-It's important to distinguish the two, because the benefits differ:
+Serverless is a new paradigm in computing that enables simplicity, efficiency and scalability for both developers
+and operators. It's important to distinguish the two, because the benefits differ:
 
-Benefits for developers
------------------------
+### Benefits for developers
 
 The main benefits that most people refer to are on the developer side and they include:
 
@@ -23,8 +18,10 @@ The main benefits that most people refer to are on the developer side and they i
 * Pay by the milliseconds your code is executing -- unlike a typical application that runs 24/7, and you're paying
   24/7, functions only run when needed
 
-Benefits for operators
-----------------------
+Since you'll be running IronFunctions yourself, the paying part may not apply, but it does apply to
+cost savings on your infrastructure bills as you'll read below.
+
+### Benefits for operators
 
 If you will be operating IronFunctions (the person who has to manage the servers behind the serverless),
 then the benefits are different, but related.
@@ -39,61 +36,54 @@ then the benefits are different, but related.
   * Scaling is the same for all functions, you don't scale each app independently
   * Scaling is simply adding more IronFunctions nodes
 
-System requirements
--------------------
+
+### System requirements
 
 * Operating system: Linux/MacOS
 * Python version: 3.5 or greater
 * Database: MySQL 5.7 or greater
 
-Quick-start guide
------------------
+### Quick-start guide
 
-Install DevStack with [IronFunctions enabled](https://github.com/iron-io/functions-devstack-plugin/blob/master/README.rst).
-Pull down [Picasso sources](https://github.com/iron-io/project-picasso).
+* Install DevStack with [IronFunctions enabled](https://github.com/iron-io/picasso/blob/master/devstack/README.rst)
+* Clone the [Picasso source](https://github.com/iron-io/picasso)
 
-Create Python3.5 virtualenv:
+Create a Python3.5 virtualenv
 
     $ virtualenv -p python3.5 .venv
     $ source .venv/bin/activate
 
-Install dependencies:
+Install dependencies
 
     $ pip install -r requirements.txt -r test-requirements.txt
 
-Install Picasso itself:
+Install Picasso
 
     $ pip install -e .
 
-Install MySQL if you haven't already, and create a new database for functions.
+Install MySQL if you haven't already, and create a new database for functions
 
     $ mysql -uroot -p -e "CREATE DATABASE functions"
 
+### Migrations
 
-Migrations
-----------
-
-Once all dependencies are installed it is necessary to run database migrations.
-Before that it is necessary to set env variable:
+Once all dependencies are installed it is necessary to run database migrations. First,
+set the following environment variable:
 
     export PICASSO_MIGRATIONS_DB=mysql+pymysql://root:root@localhost/functions
 
-In this section please specify connection URI to your own MySQL database.
-Once the file is saved, just use alembic to apply the migrations:
+Use `alembic` to apply the migrations:
 
     $ alembic upgrade head
 
-Starting a server
------------------
-
-Once it is finished you will have a console script `picasso-api`:
+### Starting the Picasso API server
 
     $ picasso-api --help
 
     Usage: picasso-api [OPTIONS]
-    
+
       Starts Picasso API service
-    
+
     Options:
       --host TEXT                    API service bind host.
       --port INTEGER                 API service bind port.
@@ -104,45 +94,43 @@ Once it is finished you will have a console script `picasso-api`:
       --log-file TEXT                Log file path
       --help                         Show this message and exit.
 
-Minimum required options to start Picasso API service:
+The following are the minimum required options to start the Picasso API service:
 
      --db-uri mysql://root:root@192.168.0.112/functions
      --keystone-endpoint http://192.168.0.112:5000/v3
      --functions-url http://192.168.0.112:8080/v1
      --log-level INFO
 
-Creating and running Picasso inside Docker container
--------------------------------------------------
+### Building and Running Picasso in Docker
 
-As part of regular Python distribution, Picasso also has its own Docker container to run.
-There are two options:
-
-* run from sources
-* run from Docker Hub
-
-In order to build container from sources run following commands:
+From the Picasso repo, build a Docker image:
 
     export DOCKER_HOST=tcp://<docker-host>:<docker-port>
     docker build -t picasso-api -f Dockerfile .
 
-After that it is required to create correct version of [Dockerfile.env](Dockerfile.env.example). 
-It container all required options to start Picasso API service properly.
-Once it is done run following commands:
+To start the container, pass in the required env vars, by
 
-    docker run -d -p 10001:10001 --env-file Dockerfile.env picasso-api
+`--env-file` example [Dockerfile.env](Dockerfile.env.example)
 
-Navigate to your web browser to check if service is running:
+     docker run -d -p 10001:10001 --env-file Dockerfile.env picasso-api
+
+or by entering all values in `-e <KEY>=<VALUE>` format.
+
+Once the container is started, check if the service in running:
+
+In your web browser navigate to:
 
     <docker-host>:10001/api
 
-or using CLI
+or using the CLI:
 
     curl -X GET http://<docker-host>:10001/api/swagger.json | python -mjson.tool
 
-Examining API
--------------
+### Examining the API
 
-In [examples](examples/) folder you can find a script that examines available API endpoints, but this script relays on:
+In [examples](examples/) folder you can find a script that examines available API endpoints.
+
+Note that this script depends on the following env vars:
 
 * `PICASSO_API_URL` - Picasso API endpoint
 * `OS_AUTH_URL` - OpenStack Auth URL
@@ -152,27 +140,20 @@ In [examples](examples/) folder you can find a script that examines available AP
 * `OS_DOMAIN` - OpenStack project domain name
 * `OS_PROJECT_NAME` - OpenStack project name
 
-Then just run script:
+To run the script:
 
     OS_AUTH_URL=http://192.168.0.112:5000/v3 OS_PROJECT_ID=8fb76785313a4500ac5367eb44a31677 OS_USERNAME=admin OS_PASSWORD=root OS_DOMAIN=default OS_PROJECT_NAME=admin ./examples/hello-lambda.sh
 
-Please note, that given values are project-specific, so they can't be reused.
+Please note that values provided are project-specific, so they can't be reused.
 
-API docs
---------
+### API docs
 
-As part of Picasso ReST API it is possible to discover API doc using Swagger Doc.
-Once server is launched you can navigate to:
+API docs are discoverable via Swagger. Just launch the Picasso API and browse to:
 
     http://<picasso-host>:<picasso-port>/api
 
-to see recent API docs
+### Support
 
+You can get community support via:
 
-Contacts
---------
-
-Feel free to reach us out at:
-
-* [Slack channel](https://open-iron.herokuapp.com/)
-* [Email](https://github.com/denismakogon)
+    * [Slack](https://open-iron.herokuapp.com/)
