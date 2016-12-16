@@ -37,13 +37,13 @@ then the benefits are different, but related.
   * Scaling is simply adding more IronFunctions nodes
 
 
-### System requirements
+## System requirements
 
 * Operating system: Linux/MacOS
 * Python version: 3.5 or greater
 * Database: MySQL 5.7 or greater
 
-### Quick-start guide
+## Quick-start guide
 
 * Install DevStack with [IronFunctions enabled](https://github.com/iron-io/picasso/blob/master/devstack/README.rst)
 * Clone the [Picasso source](https://github.com/iron-io/picasso)
@@ -53,7 +53,7 @@ Create a Python3.5 virtualenv
     $ virtualenv -p python3.5 .venv
     $ source .venv/bin/activate
 
-Install dependencies
+Install Picasso dependencies
 
     $ pip install -r requirements.txt -r test-requirements.txt
 
@@ -72,7 +72,7 @@ set the following environment variable:
 
     export PICASSO_MIGRATIONS_DB=mysql+pymysql://root:root@localhost/functions
 
-Use `alembic` to apply the migrations:
+Then use `alembic` to apply the migrations
 
     $ alembic upgrade head
 
@@ -103,22 +103,21 @@ The following are the minimum required options to start the Picasso API service:
 
 ### Building and Running Picasso in Docker
 
-From the Picasso repo, build a Docker image:
+Install [Docker engine](https://docs.docker.com/engine/installation/) if you haven't already.
+
+From the Picasso repo, build a Docker image using the following commands:
 
     export DOCKER_HOST=tcp://<docker-host>:<docker-port>
     docker build -t picasso-api -f Dockerfile .
 
-To start the container, pass in the required env vars, by
+To start the container, pass in the required env vars with `--env-file` or by entering all required
+values in `-e <KEY>=<VALUE>` format to the `docker run` command.
 
-`--env-file` example [Dockerfile.env](Dockerfile.env.example)
+Example [Dockerfile.env](Dockerfile.env.example)
 
-     docker run -d -p 10001:10001 --env-file Dockerfile.env picasso-api
+    docker run -d -p 10001:10001 --env-file Dockerfile.env picasso-api
 
-or by entering all values in `-e <KEY>=<VALUE>` format.
-
-Once the container is started, check if the service in running:
-
-In your web browser navigate to:
+Once the container is started, check if the service in running. In your web browser navigate to:
 
     <docker-host>:10001/api
 
