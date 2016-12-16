@@ -1,27 +1,20 @@
-Enabling Picasso (Functions-as-a-Service) in DevStack
-=====================================================
+# Enabling Picasso (Functions-as-a-Service) in DevStack
 
-Installing Glide
-================
+## Install Glide
 
-Note that your machine should have Glide installed.
+It is required to install Glide on the system in which you plan to run DevStack on, as
+the Functions service is written in Go and we must fetch dependencies during install.
 See more info at https://github.com/Masterminds/glide
 
 
-Download DevStack
-=================
-
-.. sourcecode:: bash
+## Download DevStack
 
     export DEVSTACK_DIR=~/devstack
     git clone git://git.openstack.org/openstack-dev/devstack.git $DEVSTACK_DIR
 
-Enable the FaaS plugin
-======================
+## Enable the Functions plugin
 
 Enable the plugin by adding the following section to ``$DEVSTACK_DIR/local.conf``
-
-.. sourcecode:: bash
 
     [[local|localrc]]
 
@@ -40,7 +33,7 @@ Enable the plugin by adding the following section to ``$DEVSTACK_DIR/local.conf`
     PICASSO_CLIENT_DIR=${PICASSO_CLIENT_DIR:-${DEST}/python-picassoclient}
     PICASSO_CLIENT_BRANCH=${PICASSO_CLIENT_BRANCH:-master}
 
-    # IronFunctions parameters
+    # Functions parameters
     FUNCTIONS_REPO=${FUNCTIONS_REPO:-git@github.com:iron-io/functions.git}
     FUNCTIONS_BRANCH=${FUNCTIONS_BRANCH:-master}
     FUNCTIONS_PORT=${FUNCTIONS_PORT:-10501}
@@ -50,10 +43,7 @@ Enable the plugin by adding the following section to ``$DEVSTACK_DIR/local.conf`
 
     DOCKERD_OPTS=${DOCKERD_OPTS:---dns 8.8.8.8 --dns 8.8.4.4 --storage-driver=overlay2 -H fd://}
 
-Run the DevStack utility
-========================
-
-.. sourcecode:: bash
+## Run the DevStack utility
 
      cd $DEVSTACK_DIR
      ./stack.sh
