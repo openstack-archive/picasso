@@ -1,4 +1,6 @@
-# Picasso: Functions-as-a-Service (FaaS) on OpenStack
+# Picasso
+
+Functions-as-a-Service (FaaS) on OpenStack
 
 ## Mission
 
