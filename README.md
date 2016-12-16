@@ -133,6 +133,10 @@ API docs are discoverable via Swagger. Just launch the Picasso API and browse to
 
     http://<picasso-host>:<picasso-port>/api
 
+### Testing Picasso
+
+See [Testing.md](TESTING.md)
+
 ### Support
 
-Join us on [Slack](https://open-iron.herokuapp.com/)!
+Join us on [Slack](https://open-iron.slack.com/)!
