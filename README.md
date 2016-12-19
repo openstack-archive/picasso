@@ -6,16 +6,16 @@ Functions-as-a-Service (FaaS) on OpenStack
 
 Picasso aims to provide an API abstraction layer for Functions-as-a-Service (FaaS) on OpenStack.
 
-## What is Serverless/FaaS?
+## What is FaaS?
 
-Serverless is a new paradigm in computing that enables simplicity, efficiency and scalability for both developers
+Functions as a service is a new paradigm in computing that enables simplicity, efficiency and scalability for both developers
 and operators. It's important to distinguish the two, because the benefits differ:
 
 ### Benefits for developers
 
 The main benefits that most people refer to are on the developer side and they include:
 
-* No servers to manage (serverless) -- you just upload your code and the platform deals with the infrastructure
+* No servers to manage -- you just upload your code and the platform deals with the infrastructure
 * Super simple coding -- no more monoliths! Just simple little bits of code
 * Pay by the milliseconds your code is executing -- unlike a typical application that runs 24/7, and you're paying
   24/7, functions only run when needed
@@ -25,8 +25,7 @@ cost savings on your infrastructure bills as you'll read below.
 
 ### Benefits for operators
 
-If you will be operating IronFunctions (the person who has to manage the servers behind the serverless),
-then the benefits are different, but related.
+If you will be operating IronFunctions, then the benefits are different, but related.
 
 * Extremely efficient use of resources
   * Unlike an app/API/microservice that consumes resources 24/7 whether they
