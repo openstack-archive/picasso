@@ -27,7 +27,7 @@ function is_functions_enabled {
 }
 
 function create_functions_accounts {
-    if [[ "$ENABLED_SERVICES" =~ "functions" ]]; then
+    if [[ "$ENABLED_SERVICES" =~ "picasso" ]]; then
 
         create_service_user "picasso" "admin"
 
