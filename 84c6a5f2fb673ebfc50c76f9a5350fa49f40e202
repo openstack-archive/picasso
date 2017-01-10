@@ -1,0 +1,8 @@
+Code-Review+2: Denis Makogon <lildee1991@gmail.com>
+Workflow+1: Denis Makogon <lildee1991@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 10 Jan 2017 20:31:41 +0000
+Reviewed-on: https://review.openstack.org/418020
+Project: openstack/picasso
+Branch: refs/heads/master
