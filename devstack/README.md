@@ -18,10 +18,10 @@ Enable the plugin by adding the following section to ``$DEVSTACK_DIR/local.conf`
 
     [[local|localrc]]
 
-    enable_plugin picasso git@github.com:iron-io/picasso.git
+    enable_plugin picasso git@github.com:openstack/picasso.git
 
     # Picasso configuration
-    PICASSO_REPO=${PICASSO_REPO:-git@github.com:iron-io/picasso.git}
+    PICASSO_REPO=${PICASSO_REPO:-git@github.com:openstack/picasso.git}
     PICASSO_BRANCH=${PICASSO_BRANCH:-master}
     PICASSO_DIR=${PICASSO_DIR:-${DEST}/picasso}
     PICASSO_PORT=${PICASSO_PORT:-10001}
@@ -29,7 +29,7 @@ Enable the plugin by adding the following section to ``$DEVSTACK_DIR/local.conf`
     PICASSO_LOG_FILE=${PICASSO_LOG_FILE:-/var/log/picasso-api.log}
 
     # Picasso client configuration
-    PICASSO_CLIENT_REPO=${PICASSO_CLIENT_REPO:-git@github.com:iron-io/python-picassoclient.git}
+    PICASSO_CLIENT_REPO=${PICASSO_CLIENT_REPO:-git@github.com:openstack/python-picassoclient.git}
     PICASSO_CLIENT_DIR=${PICASSO_CLIENT_DIR:-${DEST}/python-picassoclient}
     PICASSO_CLIENT_BRANCH=${PICASSO_CLIENT_BRANCH:-master}
 
