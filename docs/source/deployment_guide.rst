@@ -50,7 +50,7 @@ Picasso is a lightweight ReST API service to work with IronFunctions using the O
 Run the following commands to install Picasso::
 
 
-    git clone git@github.com:iron-io/picasso.git
+    git clone git@github.com:openstack/picasso.git
     pip3 install -r requirements.txt
     pip3 install -e .
 
@@ -77,8 +77,8 @@ Required software::
 
 The Picasso API endpoint should be available to OpenStack users, therefore it is suggested to run the API behind a load balancer.
 
-.. _devstack_plugin: https://github.com/iron-io/picasso/blob/master/devstack/README.rst
+.. _devstack_plugin: https://github.com/openstack/picasso/blob/master/devstack/README.md
 .. _Glide: https://github.com/Masterminds/glide
 .. _options: https://github.com/iron-io/functions/blob/master/docs/options.md
-.. _README: https://github.com/iron-io/picasso/blob/master/README.md
+.. _README: https://github.com/openstack/picasso/blob/master/README.md
 .. _OpenStack_CLI: http://docs.openstack.org/cli-reference/

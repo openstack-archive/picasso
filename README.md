@@ -46,8 +46,8 @@ If you will be operating IronFunctions, then the benefits are different, but rel
 
 ## Quick-start guide
 
-* Install DevStack with [IronFunctions enabled](https://github.com/iron-io/picasso/blob/master/devstack/README.rst)
-* Clone the [Picasso source](https://github.com/iron-io/picasso)
+* Install DevStack with [IronFunctions enabled](https://github.com/openstack/picasso/blob/master/devstack/README.md)
+* Clone the [Picasso source](https://github.com/openstack/picasso)
 
 Create a Python3.5 virtualenv
 
