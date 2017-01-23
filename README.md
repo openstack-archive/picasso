@@ -132,6 +132,21 @@ API docs are discoverable via Swagger. Just launch the Picasso API and browse to
 
     http://<picasso-host>:<picasso-port>/api
 
+### Picasso provides private and public functions
+
+Using the Picasso API, it is possible to create two type of functions - private and public.
+* Private functions are defined as functions that belong to a specific OpenStack project,
+and the execution of the function requires passing in authorization headers.
+* Public functions belong to a specific OpenStack project ID, but do not require any authorization
+headers to execute, allowing the function to be shared with anyone.
+
+Private and public functions are handled by different URL handlers:
+
+    <picasso-api-host>:<picasso-api-port>/r/{project}/{app}/{route} for private functions
+    <picasso-api-host>:<picasso-api-port>/r/{app}/{route} for public functions
+
+See [OpenStack alarming example](examples/openstack-alarms/README.md) for more details.
+
 ### Testing Picasso
 
 See [Testing.md](TESTING.md)
