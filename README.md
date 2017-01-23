@@ -136,6 +136,20 @@ API docs are discoverable via Swagger. Just launch the Picasso API and browse to
 
 See [Testing.md](TESTING.md)
 
+### Private and public functions
+
+Using Picasso API it is possible to create two type of functions - private and public.
+Private function is defined as a functions that belongs to a specific OpenStack project and its execution requires authorization headers.
+Public function is defined as a function that belongs to a specific OpenStack project ID but does not require any authorization headers to execute one, so this type of functions which HTTP route can be shared with anyone.
+
+In Picasso API private and public functions are handled by different URL handlers:
+
+    <picasso-api-host>:<picasso-api-port>/r/{project}/{app}/{route} for private functions
+    <picasso-api-host>:<picasso-api-port>/r/{app}/{route} for public functions
+
+See [OpenStack alarming example](examples/openstack-alarms/README.md) for more details.
+
+
 ### Support
 
 Join us on [Slack](https://open-iron.slack.com/)!
