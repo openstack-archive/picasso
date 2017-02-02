@@ -71,7 +71,7 @@ Install MySQL if you haven't already, and create a new database for functions
 Once all dependencies are installed it is necessary to run database migrations. First,
 set the following environment variable:
 
-    export PICASSO_MIGRATIONS_DB=mysql+pymysql://root:root@localhost/functions
+    export PICASSO_MIGRATIONS_DB=mysql+pymysql://root:<MYSQL_ROOT_PASSWORD>@localhost/functions
 
 Then use `alembic` to apply the migrations
 
@@ -97,9 +97,9 @@ Then use `alembic` to apply the migrations
 
 The following are the minimum required options to start the Picasso API service:
 
-     --db-uri mysql://root:root@192.168.0.112/functions
-     --keystone-endpoint http://192.168.0.112:5000/v3
-     --functions-url http://192.168.0.112:8080/v1
+     --db-uri mysql://root:<mysql-root-password>@<mysql-host>/functions
+     --keystone-endpoint http://<keystone-endpoint-ip>:5000/v3
+     --functions-url http://<picasso-host>:8080/v1
      --log-level INFO
 
 ### Building and Running Picasso in Docker
