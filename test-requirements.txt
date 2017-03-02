@@ -3,7 +3,7 @@
 # process, which may cause wedges in the gate later.
 
 flake8==2.5.0 # fix for https://gitlab.com/pycqa/flake8/issues/94
-hacking<0.11,>=0.10.0
+hacking>=0.12.0,!=0.13.0,<0.14  # Apache-2.0
 sphinx!=1.3b1,<1.4,>=1.2.1 # BSD
 testtools>=1.4.0 # MIT
 pytest-aiohttp==0.1.3
