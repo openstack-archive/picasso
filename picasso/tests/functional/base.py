@@ -14,9 +14,9 @@
 
 import os
 import testtools
-import uuid
 
 from aioservice.http import service
+from oslo_utils import uuidutils
 
 from ...api.controllers import apps
 from ...api.controllers import routes
@@ -71,8 +71,8 @@ class FunctionalTestsBase(base.PicassoTestsBase, testtools.TestCase):
             functions_client=fnclient,
         )
 
-        self.project_id = str(uuid.uuid4()).replace("-", "")
-        self.other_project_id = str(uuid.uuid4()).replace("-", "")
+        self.project_id = uuidutils.generate_uuid().replace("-", "")
+        self.other_project_id = uuidutils.generate_uuid().replace("-", "")
 
         self.test_client = client.ProjectBoundTestClient(
             self.testapp, self.project_id)

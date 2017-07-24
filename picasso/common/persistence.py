@@ -13,7 +13,7 @@
 #    under the License.
 
 import datetime
-import uuid
+from oslo_utils import uuidutils
 
 from . import config
 
@@ -31,7 +31,7 @@ class BaseDatabaseModel(object):
         logger.debug("Attempting to create object class instance "
                      "'{}' with attributes '{}'"
                      .format(str(self.__class__), str(kwargs)))
-        self.id = uuid.uuid4().hex
+        self.id = uuidutils.generate_uuid(dashed=False)
         self.created_at = str(datetime.datetime.now())
         self.updated_at = str(datetime.datetime.now())
         for k, v in kwargs.items():

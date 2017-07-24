@@ -13,7 +13,7 @@
 #    under the License.
 
 import collections
-import uuid
+from oslo_utils import uuidutils
 
 from functionsclient import client
 from functionsclient.v1 import apps
@@ -78,7 +78,7 @@ class FakeRoutes(object):
         else:
             route = await self.show(path, loop=loop)
             return "Hello world!" if route.type == "sync" else {
-                "call_id": uuid.uuid4().hex
+                "call_id": uuidutils.generate_uuid()
             }
 
     async def update(self, route_path, loop=None, **data):
