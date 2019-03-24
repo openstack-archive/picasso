@@ -10,7 +10,7 @@ See more info at https://github.com/Masterminds/glide
 ## Download DevStack
 
     export DEVSTACK_DIR=~/devstack
-    git clone git://git.openstack.org/openstack-dev/devstack.git $DEVSTACK_DIR
+    git clone https://git.openstack.org/openstack-dev/devstack.git $DEVSTACK_DIR
 
 ## Enable the Functions plugin
 

@@ -12,7 +12,7 @@ In order to get DevStack use following commands:
 
 ```bash
 export DEVSTACK_DIR=~/devstack
-git clone git://git.openstack.org/openstack-dev/devstack.git $DEVSTACK_DIR
+git clone https://git.openstack.org/openstack-dev/devstack.git $DEVSTACK_DIR
 ```
 
 Create a file, `$DEVSTACK_DIR/local.conf` with the following text:
